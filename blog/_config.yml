@@ -72,5 +72,3 @@ deploy:
   repo: https://github.com/guoyanlei/guoyanlei.github.io
 branch: hexo
 
-# baidu_analytics
-baidu_analytics: b7152408fd85d92b67e9194a204822d7
