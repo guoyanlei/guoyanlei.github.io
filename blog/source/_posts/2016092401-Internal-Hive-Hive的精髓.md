@@ -1,5 +1,5 @@
 ---
-title: 2016092401-Internal Hive--Hive的精髓
+title: Internal Hive--Hive的精髓
 date: 2016-09-24 18:20:51
 tags:
 - 大数据
@@ -28,7 +28,7 @@ categories:
 
     select u.name, o.orderid from order o join user u on o.uid = u.uid;
 
-{% img  /img/hive/1469784640027.jpg, alt, join %}
+{% img /img/hive/1469784640027.jpg join %}
 
 总结之，即
 1.Map阶段将输入文件的每行按key value分割；
@@ -44,7 +44,7 @@ categories:
 
     select rank, isonline, count(*) from city group by rank, isonline;
 
-{% img /img/hive/1469787083263.jpg, alt, GroupBy %}
+{% img /img/hive/1469787083263.jpg GroupBy %}
 
 分析之，各个阶段的操作和Join类似，不同的是key、value的分割问题。观察结果，可以忽略最后一列，将group by操作用来做去重处理，SQL如下。
 
@@ -56,7 +56,7 @@ categories:
 
     select dealid, count(distinct uid) num from order group by dealid;
 
-{% img /img/hive/1469934726261.jpg, alt, count %}
+{% img /img/hive/1469934726261.jpg count %}
 
 分析之，若仅仅对一个字段进行distinct处理，只需将group by 和distinct字段组合为Map输出的key，利用Shuffle阶段的排序功能汇聚到不同的Reduce，最后将group by字段作为Reduce输出的key。
 若对两个或以上的字段进行distinct处理，如下SQL，则不能使用上面方法（将各个字段组合起来，借助Shuffle的排序功能）实现汇聚了。
@@ -66,7 +66,7 @@ categories:
 在Hive中是这样实现的，如下图，对所有的distinct字段编号，每行数据生成n行数据，那么相同字段就会分别排序，这时只需要在reduce阶段记录LastKey即可去重。
 这种实现方式很好的利用了MapReduce的排序，节省了reduce阶段去重的内存消耗，但是缺点是增加了shuffle的数据量。
 
-{% img /img/hive/1469936051510.jpg, alt, reduce %}
+{% img /img/hive/1469936051510.jpg reduce %}
 
 注意：再仔细观察一下整个过程，发现最终的去重、求和处理都是在最后的Reduce阶段完成的，我们知道对于整个Job处理，Reducer的个数往往是小于Maper的，当处理的数据量非常大Reducer的个数又非常少，或者个别group by字段的数据较为突出时，就会引发两个问题：处理效率非常慢，数据倾斜。
 
@@ -78,7 +78,7 @@ categories:
 
 了解完MapReduce框架实现SQL的基本原理之后，下面分析Hive SQL的编译过程。我们可以先从全局的角度，了解一下Hive的整体架构，别的不多说，其中的重点就是Driver模块，它由编译器（Compiler）、优化器（Optimizer）、解释器（Executor）等完成HQL查询语句从词法分析、语法分析、编译、优化以及查询计划的生成。生成的查询计划存储在HDFS中，并在随后有MapReduce调用执行。
 
-{% img /img/hive/1469954620861.jpg, alt, scheme %}
+{% img /img/hive/1469954620861.jpg scheme %}
 
 下面重点介绍下编译器的重要过程。
 + 编译器将Hive SQL 转换成一组操作符(Operator)
@@ -131,16 +131,16 @@ Hive最终生成的MapReduce任务中的Map阶段和Reduce阶段均由OperatorTr
 3）插入到新的表access_log_temp2中
 由此得到的真实的语法树如下图。
 
-{% img /img/hive/1469961401357.jpg, alt, ASTTree %}
+{% img /img/hive/1469961401357.jpg ASTTree %}
 
 第2步：遍历AST Tree，抽象出查询的基本组成单元QueryBlock
 下图给出语法树的一部分抽象成查询块的过程，其他类似。
 
-{% img /img/hive/1469967315586.jpg, alt, QueryBlock %}
+{% img /img/hive/1469967315586.jpg QueryBlock %}
 
 第3步：遍历QueryBlock，翻译为逻辑查询计划，即执行操作树OperatorTree（由一个和多个操作符构成）；
 
-{% img /img/hive/1469968200881.jpg, alt, QueryBlock %}
+{% img /img/hive/1469968200881.jpg QueryBlock %}
 
 第4步：对OperatorTree变换，合并不必要的ReduceSinkOperator，减少shuffle数据量。
 经过第3步之后生成的执行操作树如图中最右所示，这颗执行操作树没什么可优化的了，但是若我们要执行的是如下的SQL，则生成的执行语法树是图中第二个，此时逻辑层优化器就会对这颗语法树进行优化，结果如最右图所示。
@@ -152,11 +152,11 @@ Hive最终生成的MapReduce任务中的Map阶段和Reduce阶段均由OperatorTr
         ON (a.prono= p.prono)
      WHERE p.maker= 'honda';
 
-{% img /img/hive/1469969995476.jpg, alt, OperatorTree %}
+{% img /img/hive/1469969995476.jpg OperatorTree %}
 
 第5步：遍历OperatorTree，翻译为MapReduce任务，将上步生成的OperatorTree转换成的MapReduce任务如下图。
 
-{% img /img/hive/1469970118344.jpg, alt, MapReduce %}
+{% img /img/hive/1469970118344.jpg MapReduce %}
 
 第6步：物理层优化器进行MapReduce任务的变换，包括：
 MapJoinResolver 处理MapJoin
@@ -288,7 +288,7 @@ Hive中文件格式有三种：textfile，sequencefile和rcfile。总体上来�
 任务进度长时间维持在99%（或100%），查看任务监控页面，发现只有少量（1个或几个）reduce子任务未完成。因为其处理的数据量和其他reduce差异过大。
 单一reduce的记录数与平均记录数差异过大，通常可能达到3倍甚至更多。 最长时长远大于平均时长。如下图即为一个数据倾斜的例子。
 
-{% img /img/hive/1469973820250.jpg, alt, qingxie %}
+{% img /img/hive/1469973820250.jpg qingxie %}
 
 主要原因：
 1)、key分布不均匀
@@ -310,7 +310,7 @@ Hive给出的解决方案叫skew join，其原理把某些会产生倾斜的的�
 
 skew join的处理流程如下图所示：
 
-{% img /img/hive/1469974304534.jpg, alt, skew %}
+{% img /img/hive/1469974304534.jpg skew %}
 
 其次，group by造成的倾斜有两个参数可以解决，一个是
 `hive.Map.aggr`，默认值已经为true，意思是会做Map端的combiner。
