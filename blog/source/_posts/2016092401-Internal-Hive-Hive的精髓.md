@@ -36,6 +36,8 @@ categories:
 （Shuffle的主要任务是：怎样把Map task的输出结果有效地传送到Reduce端。也可以这样理解， Shuffle描述着数据从Map task输出到Reduce task输入的这段过程，包括了Sort和Combiner操作。）
 3.Reduce阶段会将相同key值的value进行处理，从而实现Join操作。
 
+<!-- more -->
+
 注意：这里可以思考一个问题，假如order表中uid=1的数据占了绝大多数，而其他的uid却与之相比又少很多，极端一下，uid=1的有1000多万，而其他的平均只有1千个，这样在进行Reduce时就会有个别的Reduce收到比其他Reduce多得多的数据，这样即产生了【数据倾斜】，之后会详细介绍优化方法和途径。
 
 ### Group By的实现原理
