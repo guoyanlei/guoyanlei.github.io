@@ -245,7 +245,7 @@ baidu_analytics: b7152408fd85d92b67e9194a204822d7
 
 # Duoshuo ShortName
 duoshuo_shortname: guoyanlei
-duoshuo_hotartical: true
+# duoshuo_hotartical: true
 # Disqus
 #disqus_shortname:
 
