@@ -16,13 +16,13 @@ categories:
 + Hive SQL的性能优化
 + 数据倾斜的预防和处理
 
-##MapReduce框架实现SQL的基本原理
+## MapReduce框架实现SQL的基本原理
 
 首先，我们先不去关心HiveSQL具体是怎么被Hive所编译的，我们只需知道一个Hive查询会生成多个MapReduce Job，一个MapReduce Job又有Map，Reduce，Shuffle，Sort等多个阶段，所以在深入理解HiveSQL编译过程之前，我们需要先了解一下MapReduce框架实现SQL基本操作的原理。
 
 接下来以SQL中的Join、Group by和Distinct的实现原理来理解MapReduce框架：
 
-###Join的实现原理
+### Join的实现原理
 
 假如有两个表，user表和order表，它们之间进行Join操作，整个过程如下图：
 
@@ -38,7 +38,7 @@ categories:
 
 注意：这里可以思考一个问题，假如order表中uid=1的数据占了绝大多数，而其他的uid却与之相比又少很多，极端一下，uid=1的有1000多万，而其他的平均只有1千个，这样在进行Reduce时就会有个别的Reduce收到比其他Reduce多得多的数据，这样即产生了【数据倾斜】，之后会详细介绍优化方法和途径。
 
-###Group By的实现原理
+### Group By的实现原理
 
 如下的Group by操作的过程如下图：
 
@@ -50,7 +50,7 @@ categories:
 
     select rank, isonline from city group by rank, isonline;
 
-###count(distinct id)的实现原理
+### count(distinct id)的实现原理
 
 考虑如下的一个SQL查询：
 
@@ -74,7 +74,7 @@ categories:
 + 针对第一个问题，尽量避免使用count(distinct)来去重求和，应多使用group by 或 row number 先去重，然后再使用sum来求和，主要是为了借助group by 或 row number在Map阶段先实现去重，进而分担Reduce的压力，从而提高效率。
 + 针对数据倾斜，之后详细介绍
 
-##Hive SQL的编译过程
+## Hive SQL的编译过程
 
 了解完MapReduce框架实现SQL的基本原理之后，下面分析Hive SQL的编译过程。我们可以先从全局的角度，了解一下Hive的整体架构，别的不多说，其中的重点就是Driver模块，它由编译器（Compiler）、优化器（Optimizer）、解释器（Executor）等完成HQL查询语句从词法分析、语法分析、编译、优化以及查询计划的生成。生成的查询计划存储在HDFS中，并在随后有MapReduce调用执行。
 
@@ -163,9 +163,9 @@ MapJoinResolver 处理MapJoin
 SkewJoinResolver  处理倾斜Join
 CommonJoinResolver  处理普通Join 。等
 
-##Hive SQL的性能优化
+## Hive SQL的性能优化
 
-###Map阶段的优化
+### Map阶段的优化
 
 Map阶段的优化，主要是确定合适的map数。在这之前首先要了解的就是map的数量是怎么计算的。
 
@@ -185,7 +185,7 @@ Map阶段的优化，主要是确定合适的map数。在这之前首先要了�
 调整大小的时机根据查询的不同而不同，主要来讲还是看map task执行的时间来确定，若执行时间很长，那么往往增加map数量，使得每个map task处理的数据量减少，能够让map task更快完成。若map task的运行时间已经很少了，比如10-20秒，这个时候增加map不太可能让map task更快完成，反而可能因为map需要的初始化时间反而让job总体速度变慢，这个时候反而需要考虑是否可以把map的数量减少，这样可以节省更多资源给其他Job。
 
 
-###Reduce阶段的优化
+### Reduce阶段的优化
 
 跟上面的map优化类似，Reduce阶段的优化也是选择合适的reduce task数量。
 与map优化不同的是，reduce优化时，可以直接设置`mapred.reduce.tasks`参数从而直接指定reduce的个数。当然直接指定reduce个数虽然比较方便，但是不利于自动扩展。Reduce数的设置虽然相较map更灵活，但是也可以像map一样设定一个自动生成规则，这样运行定时job的时候就不用担心原来设置的固定reduce数会由于数据量的变化而不合适。
@@ -202,7 +202,7 @@ Hive估算reduce数量的时候，使用的是下面的公式：
 其中，`hive.exec.reducers.bytes.per.reducer`默认为1G，也就是每个reduce处理相当于job输入文件中1G大小的对应数据量，而且reduce个数不能超过一个上限参数值，这个参数的默认取值为999。所以我们也可以用调整这个公式的方式调整reduce数量，在灵活性和定制性上取得一个平衡。
 
 
-###Shuffle阶段的优化
+### Shuffle阶段的优化
 
 Shuffle阶段包括了：spill, copy, sort等。
 其中，spill阶段，由于内存不够，数据可能没办法在内存中一次性排序完成，那么就只能把局部排序的文件先保存到磁盘上，这个动作叫spill，然后spill出来的多个文件可以在最后进行merge。如果发生spill，可以通过设置`io.sort.mb`来增大mapper输出buffer的大小，避免spill的发生。
@@ -212,7 +212,7 @@ Reduce端的merge也是一样可以用io.sort.factor。一般情况下这两个�
 
 copy阶段是把文件从map端copy到reduce端。默认情况下在5%的map完成的情况下reduce就开始启动copy，这个有时候是很浪费资源的，因为reduce一旦启动就被占用，一直等到map全部完成，收集到所有数据才可以进行后面的动作，所以我们可以等比较多的map完成之后再启动reduce流程，这个比例可以通`mapred.reduce.slowstart.completed.maps`去调整，他的默认值就是5%。
 
-###文件格式的优化
+### 文件格式的优化
 
 文件格式方面有两个问题，一个是给输入和输出选择合适的文件格式，另一个则是小文件问题。小文件问题在目前的hive环境下已经得到了比较好的解决，hive的默认配置中就可以在小文件输入时自动把多个文件合并给1个map处理，输出时如果文件很小也会进行一轮单独的合并。下面重点介绍文件格式。
 
@@ -232,9 +232,9 @@ Hive中文件格式有三种：textfile，sequencefile和rcfile。总体上来�
     create table seq_file_test as select * from source_table;
 
 
-###SQL的整体优化
+### SQL的整体优化
 
-####让多个Job并行处理
+#### 让多个Job并行处理
 
 在有些情况下Job之间是可以并行的，典型的就是子查询。当需要执行多个子查询union all或者join操作的时候，Job间并行就可以使用。如下代码：
 
@@ -253,7 +253,7 @@ Hive中文件格式有三种：textfile，sequencefile和rcfile。总体上来�
 
 设置Job间并行的参数是`hive.exec.parallel`，将其设为true即可。默认的并行度为8，也就是最多允许sql中8个Job并行。如果想要更高的并行度，可以通过`hive.exec.parallel. thread.number`参数进行设置，但要避免设置过大而占用过多资源。
 
-####减少Job数量
+#### 减少Job数量
 
 针对如下的查询：查询某网站日志中访问过页面a和页面b的用户数量。
 一般想到的代码是这样的：
@@ -281,7 +281,7 @@ Hive中文件格式有三种：textfile，sequencefile和rcfile。总体上来�
             and count(case when page_name = ‘b’ then 1 end) > 0
           )
 
-##数据倾斜的预防和处理
+## 数据倾斜的预防和处理
 
 所谓数据倾斜，说的是由于数据分布不均匀，个别值集中占据大部分数据量，加上hadoop的计算模式，导致计算资源不均匀引起性能下降。
 表现症状：
@@ -291,13 +291,13 @@ Hive中文件格式有三种：textfile，sequencefile和rcfile。总体上来�
 {% img /img/hive/1469973820250.jpg qingxie %}
 
 主要原因：
-1)、key分布不均匀
+1. key分布不均匀
 
-2)、业务数据本身的特性
+2. 业务数据本身的特性
 
-3)、建表时考虑不周
+3. 建表时考虑不周
 
-4)、某些SQL语句本身就有数据倾斜
+4. 某些SQL语句本身就有数据倾斜
 
 关于数据倾斜的问题在本文开头部分已经有举例，常见的倾斜分为group by造成的倾斜和join造成的倾斜。
 
@@ -331,7 +331,7 @@ skew join的处理流程如下图所示：
 
 【参考文献】
 1. Hive SQL 编译过程 http://my.oschina.net/leejun2005/blog/267219
-2. Hive A Warehousing Solution Over a MapReduce Framework http://www.vldb.org/pvldb/2/vldb09-938.pdf
+2. [Hive A Warehousing Solution Over a MapReduce Framework](http://www.vldb.org/pvldb/2/vldb09-938.pdf)
 3. Internal Hive http://www.slideshare.net/recruitcojp/internal-hive
 4. 深入浅出数据仓库中SQL性能优化之Hive篇 http://www.csdn.net/article/2015-01-13/2823530
 5. http://my.oschina.net/leejun2005/blog/77701
