@@ -237,7 +237,9 @@ mathjax:
 
 # Swiftype Search API Key
 #swiftype_key:
-
+search:
+  path: search.xml
+  field: post
 # Baidu Analytics ID
 baidu_analytics: b7152408fd85d92b67e9194a204822d7
 
@@ -254,7 +256,7 @@ duoshuo_shortname: guoyanlei
 ##  type: button
 
 # Share
-#jiathis:
+jiathis: true
 #add_this_id:
 
 # Share
