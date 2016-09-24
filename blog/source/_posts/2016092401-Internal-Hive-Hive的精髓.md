@@ -26,7 +26,9 @@ categories:
 
 假如有两个表，user表和order表，它们之间进行Join操作，整个过程如下图：
 
-    select u.name, o.orderid from order o join user u on o.uid = u.uid;
+```sql
+select u.name, o.orderid from order o join user u on o.uid = u.uid;
+```
 
 {% img /img/hive/1469784640027.jpg join %}
 

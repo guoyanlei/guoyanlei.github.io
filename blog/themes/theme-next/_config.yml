@@ -256,11 +256,11 @@ duoshuo_shortname: guoyanlei
 ##  type: button
 
 # Share
-jiathis: true
+#jiathis: true
 #add_this_id:
 
 # Share
-#duoshuo_share: true
+duoshuo_share: true
 
 # Google Webmaster tools verification setting
 # See: https://www.google.com/webmasters/
