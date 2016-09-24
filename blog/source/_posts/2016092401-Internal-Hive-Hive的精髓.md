@@ -42,26 +42,34 @@ categories:
 
 如下的Group by操作的过程如下图：
 
-    select rank, isonline, count(*) from city group by rank, isonline;
+```sql
+select rank, isonline, count(*) from city group by rank, isonline;
+```
 
 {% img /img/hive/1469787083263.jpg GroupBy %}
 
 分析之，各个阶段的操作和Join类似，不同的是key、value的分割问题。观察结果，可以忽略最后一列，将group by操作用来做去重处理，SQL如下。
 
-    select rank, isonline from city group by rank, isonline;
+```sql
+select rank, isonline from city group by rank, isonline;
+```
 
 ### count(distinct id)的实现原理
 
 考虑如下的一个SQL查询：
 
-    select dealid, count(distinct uid) num from order group by dealid;
+```sql
+select dealid, count(distinct uid) num from order group by dealid;
+```
 
 {% img /img/hive/1469934726261.jpg count %}
 
 分析之，若仅仅对一个字段进行distinct处理，只需将group by 和distinct字段组合为Map输出的key，利用Shuffle阶段的排序功能汇聚到不同的Reduce，最后将group by字段作为Reduce输出的key。
 若对两个或以上的字段进行distinct处理，如下SQL，则不能使用上面方法（将各个字段组合起来，借助Shuffle的排序功能）实现汇聚了。
 
-    select dealid, count(distinct uid), count(distinct date) from order group by dealid;
+```sql
+select dealid, count(distinct uid), count(distinct date) from order group by dealid;
+```
 
 在Hive中是这样实现的，如下图，对所有的distinct字段编号，每行数据生成n行数据，那么相同字段就会分别排序，这时只需要在reduce阶段记录LastKey即可去重。
 这种实现方式很好的利用了MapReduce的排序，节省了reduce阶段去重的内存消耗，但是缺点是增加了shuffle的数据量。
@@ -119,11 +127,13 @@ Hive最终生成的MapReduce任务中的Map阶段和Reduce阶段均由OperatorTr
 
 以如下的查询为例进行详细描述：
 
+```sql
     INSERT OVERWRITE TABLE access_log_temp2
     SELECT a.user, a.prono, p.maker, p.price
       FROM access_log_hbase as a
       JOIN product_hbase as p
         ON (a.prono= p.prono);
+```
 
 第1步：Parser成抽象语法树AST Tree，先不看下面的图片，自己可以先想想一下整个SQL会被如何解析。首先按照常理的思路，可以把上面的查询分为如下面三个步骤：
 1）从表access_log_hbase和表product_hbase去查，关联的字段是prono；
@@ -145,12 +155,14 @@ Hive最终生成的MapReduce任务中的Map阶段和Reduce阶段均由OperatorTr
 第4步：对OperatorTree变换，合并不必要的ReduceSinkOperator，减少shuffle数据量。
 经过第3步之后生成的执行操作树如图中最右所示，这颗执行操作树没什么可优化的了，但是若我们要执行的是如下的SQL，则生成的执行语法树是图中第二个，此时逻辑层优化器就会对这颗语法树进行优化，结果如最右图所示。
 
+```sql
     INSERT OVERWRITE TABLE access_log_temp2
     SELECT a.user, a.prono, p.maker, p.price
       FROM access_log_hbase as a
       JOIN product_hbase as p
         ON (a.prono= p.prono)
      WHERE p.maker= 'honda';
+```
 
 {% img /img/hive/1469969995476.jpg OperatorTree %}
 
@@ -169,13 +181,15 @@ CommonJoinResolver  处理普通Join 。等
 
 Map阶段的优化，主要是确定合适的map数。在这之前首先要了解的就是map的数量是怎么计算的。
 
-    num_map_tasks = max[
-                        ${mapred.min.split.size}, //数据的最小分割单元大小
-                        min(
-                            ${dfs.block.size}, //HDFS设置的数据块大小
-                            ${mapred.max.split.size}  //数据的最大分割单元大小
-                        )
-                    ]
+```sql
+num_map_tasks = max[
+                    ${mapred.min.split.size}, //数据的最小分割单元大小
+                    min(
+                        ${dfs.block.size}, //HDFS设置的数据块大小
+                        ${mapred.max.split.size}  //数据的最大分割单元大小
+                    )
+                ]
+```
 
 一般来说dfs.block.size是由HDFS决定的，Hive无权干预。
 所以实际上只有`mapred.min.split.size和mapred.max.split.size`这两个参数来决定map数量。
@@ -192,12 +206,14 @@ Map阶段的优化，主要是确定合适的map数。在这之前首先要了�
 
 Hive估算reduce数量的时候，使用的是下面的公式：
 
-    num_reduce_tasks = min[
-                            ${hive.exec.reducers.max},
-                            (
-                                ${input.size} / ${ hive.exec.reducers.bytes.per.reducer}
-                            )
-                       ]
+```sql
+num_reduce_tasks = min[
+                        ${hive.exec.reducers.max},
+                        (
+                            ${input.size} / ${ hive.exec.reducers.bytes.per.reducer}
+                        )
+                   ]
+```
 
 其中，`hive.exec.reducers.bytes.per.reducer`默认为1G，也就是每个reduce处理相当于job输入文件中1G大小的对应数据量，而且reduce个数不能超过一个上限参数值，这个参数的默认取值为999。所以我们也可以用调整这个公式的方式调整reduce数量，在灵活性和定制性上取得一个平衡。
 
@@ -219,18 +235,21 @@ copy阶段是把文件从map端copy到reduce端。默认情况下在5%的map完�
 Hive中文件格式有三种：textfile，sequencefile和rcfile。总体上来说，rcfile的压缩比例和查询时间稍好一点，所以推荐使用。
 关于使用方法，可以在建表结构时可以指定格式，然后指定压缩插入：
 
-    create table rc_file_test( col int ) stored as rcfile;
-       set hive.exec.compress.output = true;
-    insert overwrite table rc_file_test
-    select * from source_table;
+```sql
+create table rc_file_test( col int ) stored as rcfile;
+   set hive.exec.compress.output = true;
+insert overwrite table rc_file_test
+select * from source_table;
+```
 
 另外时也可以指定输出格式，也可以通过hive.default.fileformat来设定输出格式，适用于create table as select的情况：
 
-    set hive.default.fileformat = SequenceFile;
-    set hive.exec.compress.output = true; /*对于sequencefile，有record和block两种压缩方式可选，block压缩比更高*/
-    set mapred.output.compression.type = BLOCK;
-    create table seq_file_test as select * from source_table;
-
+```sql
+set hive.default.fileformat = SequenceFile;
+set hive.exec.compress.output = true; /*对于sequencefile，有record和block两种压缩方式可选，block压缩比更高*/
+set mapred.output.compression.type = BLOCK;
+create table seq_file_test as select * from source_table;
+```
 
 ### SQL的整体优化
 
@@ -238,17 +257,20 @@ Hive中文件格式有三种：textfile，sequencefile和rcfile。总体上来�
 
 在有些情况下Job之间是可以并行的，典型的就是子查询。当需要执行多个子查询union all或者join操作的时候，Job间并行就可以使用。如下代码：
 
-    select * from
-    (
-        select count(*) from logs
-         where log_date = 20130801 and item_id = 1
-         union all
-        select count(*) from logs
-         where log_date = 20130802 and item_id = 2
-         union all
-        select count(*) from logs
-         where log_date = 20130803 and item_id = 3
-    )t
+```sql
+select * from
+(
+    select count(*) from logs
+     where log_date = 20130801 and item_id = 1
+     union all
+    select count(*) from logs
+     where log_date = 20130802 and item_id = 2
+     union all
+    select count(*) from logs
+     where log_date = 20130803 and item_id = 3
+) t
+```
+
 
 
 设置Job间并行的参数是`hive.exec.parallel`，将其设为true即可。默认的并行度为8，也就是最多允许sql中8个Job并行。如果想要更高的并行度，可以通过`hive.exec.parallel. thread.number`参数进行设置，但要避免设置过大而占用过多资源。
@@ -258,28 +280,33 @@ Hive中文件格式有三种：textfile，sequencefile和rcfile。总体上来�
 针对如下的查询：查询某网站日志中访问过页面a和页面b的用户数量。
 一般想到的代码是这样的：
 
-    select count(*)
-      from
-          (
-           select distinct user_id
-             from logs where page_name = ‘a’
-          ) a
-      join
-          (
-           select distinct user_id
-             from logs where blog_owner = ‘b’
-          ) b
-        on a.user_id = b.user_id;
+```sql
+select count(*)
+  from
+      (
+       select distinct user_id
+         from logs where page_name = ‘a’
+      ) a
+  join
+      (
+       select distinct user_id
+         from logs where blog_owner = ‘b’
+      ) b
+    on a.user_id = b.user_id;
+```
+
 这样一来，就要产生2个求子查询的Job，一个用于关联的Job，还有一个计数的Job，一共有4个Job。
 更好的查询应该是这样的，只需要用一个Job就能跑完：
 
-    select count(*)
-      from logs group by user_id
-    having
-          (
-            count(case when page_name = ‘a’ then 1 end) > 0
-            and count(case when page_name = ‘b’ then 1 end) > 0
-          )
+```sql
+select count(*)
+  from logs group by user_id
+having
+      (
+        count(case when page_name = ‘a’ then 1 end) > 0
+        and count(case when page_name = ‘b’ then 1 end) > 0
+      )
+```
 
 ## 数据倾斜的预防和处理
 
@@ -301,7 +328,9 @@ Hive中文件格式有三种：textfile，sequencefile和rcfile。总体上来�
 首先Join造成的倾斜。
 Hive给出的解决方案叫skew join，其原理把某些会产生倾斜的的特殊值先不在Reduce端计算掉，而是先写入hdfs，然后启动一轮Map join专门做这个特殊值的计算，期望能提高计算这部分值的处理速度。当然你要告诉Hive这个join是个skew join，即：
 
-    set Hive.optimize.skewjoin = true;
+```sql
+set Hive.optimize.skewjoin = true;
+```
 
 还有要告诉Hive如何判断特殊值，根据`hive.skewjoin.key`设置的数量Hive可以知道，比如默认值是100000，那么超过100000条记录的值就是特殊值。
 
@@ -316,12 +345,14 @@ skew join的处理流程如下图所示：
 
 如果说要改写SQL来优化的话，可以按照下面这么做：
 
-    /*改写前*/
-    select a， count(distinct b) as c from tbl group by a;
-    /*改写后*/
-    select a， count(*) as c
-      from (select distinct a， b from tbl)
-     group by a;
+```sql
+/*改写前*/
+select a， count(distinct b) as c from tbl group by a;
+/*改写后*/
+select a， count(*) as c
+  from (select distinct a， b from tbl)
+ group by a;
+```
 
 总结起来，Hive确实好用，上手也容易，但是真正做到 “用好” 却不容易，且用且珍惜。
 
