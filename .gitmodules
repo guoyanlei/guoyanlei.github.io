@@ -1,3 +1,5 @@
 [submodule "blog/themes/hiero"]
 	path = blog/themes/hiero
 	url = https://github.com/guoyanlei/hexo-theme-hiero.git
+	branch = hexo
+    ignore = dirty
