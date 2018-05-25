@@ -1,5 +1,5 @@
 
----
+
 title: Hive-JDBC连接HiveServer2传递参数
 date: 2018/05/20 22:30:04
 tags:
@@ -7,9 +7,13 @@ tags:
 - HiveServer2
 categories:
 - hive
+
 ---
 
 HiveServer2（以下简称：HS2）是Hive提供的一种jdbc服务，用户可以通过Hive自带的Beeline连接，也可以使用Java、Python或者PHP等通过jdbc的方式连接。下面以Java连接HiveServer2为例来介绍几种向Hive传递参数的方法。
+
+<!--more-->
+
 
 ### Java-JDBC连接HS2
 
