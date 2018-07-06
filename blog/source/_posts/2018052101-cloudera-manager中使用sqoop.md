@@ -5,7 +5,7 @@ date: 2018/05/21 11:30:04
 tags:
 - sqoop
 categories:
-- sqoop
+- 数据同步
 
 ---
 
