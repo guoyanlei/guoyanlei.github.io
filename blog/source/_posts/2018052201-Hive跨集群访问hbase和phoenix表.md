@@ -8,7 +8,7 @@ tags:
 - hbase
 - phoenix
 categories:
-- hive
+- hbase
 
 ---
 
