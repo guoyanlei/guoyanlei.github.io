@@ -82,7 +82,7 @@ sqlContext.sql("show databases").show()
 
 执行上面定义好的的程序。
 
-![Running](/img/pycharm/running.pngg)
+![Running](/img/pycharm/running.png)
 
 可以看出，实际程序执行的是同步到远程服务器的代码。并借助ssh登录到远程服务器执行，并返回执行的结果。
 
