@@ -77,5 +77,65 @@ set hive.exec.reducers.bytes.per.reducer=1073741824 -- 每个reduce处理的数�
 
 小文件太多的话可以打开reduce端的小文件合并，即第一个set，后面的distribute by rand()保证了记录随机分配到50个文件，不管里数据量有多小，最后这50个文件的大小应该是一致的.
 
+有个推送的例子：
+
+```
+推送逻辑写在UDF中，如下SQL的实际推送是在Map阶段完成
+推送并行度，是依据表ads_hive_rooster_ipush_users_1d分区中文件的个数
+和上面生成Map任务的逻辑一样，根据文件的大小和块大小进行分割
+
+add jar hdfs://nameservice:8020/user/udf/dmp-function-lib-test2.jar;
+create temporary function push as 'suishen.temp.udf.PushTestUDF';
+select result
+      ,count(*)
+  from
+      (
+        select pust(uid) as result
+          from
+              (
+                select app_key
+                      ,uid
+                      ,item_id
+                      ,post_id
+                      ,title
+                      ,ds
+                      ,hh
+                  from prod.ads_hive_rooster_ipush_users_1d
+                 where ds = '20181120'
+              ) a
+      ) a
+ group by result
+;
+
+通过设置文件大小来这是Map个数是一种思路，但是不好把控。
+另一种方式就是把推送的执行放在Reduce端，通过控制reduce的个数来跟好的控制并行度
+可通过distribute by rand()进行重分布，然后mapred.reduce.tasks设置reduce执行个数
+
+add jar hdfs://nameservice:8020/user/udf/dmp-function-lib-test2.jar;
+create temporary function push as 'suishen.temp.udf.PushTestUDF';
+set mapred.reduce.tasks=100;
+select result
+      ,count(*)
+  from
+      (
+        select pust(uid) as result
+          from
+              (
+                select app_key
+                      ,uid
+                      ,item_id
+                      ,post_id
+                      ,title
+                      ,ds
+                      ,hh
+                  from prod.ads_hive_rooster_ipush_users_1d
+                 where ds = '20181120'
+                distribute by rand()
+              ) a
+      ) a
+ group by result
+;
+```
+
 
 
