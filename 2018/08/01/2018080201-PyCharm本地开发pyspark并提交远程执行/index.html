@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  
+  <title>pycharm本地开发pyspark并提交远程执行 | GuoYL&#39;s Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="pyspark" />
+  
+  
+  
+  
+  <meta name="description" content="最近在学习pyspark的开发，遇到些问题记录下。 我们在开发pyspark时经常需要进行测试，自己电脑上安装搭建一个spark环境代价有点高，目前有的同事在开发时，通常是开发完把代码贴出到本地测试集群进行测试，因此，能不能借助pycharm里的一个功能，连接本地测试集群的pyspark进行执行呢，经过一番搜索终于实现了这一个功能。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyCharm本地开发pyspark并提交远程执行">
+<meta property="og:url" content="http://guoyanlei.top/2018/08/01/2018080201-PyCharm%E6%9C%AC%E5%9C%B0%E5%BC%80%E5%8F%91pyspark%E5%B9%B6%E6%8F%90%E4%BA%A4%E8%BF%9C%E7%A8%8B%E6%89%A7%E8%A1%8C/index.html">
+<meta property="og:site_name" content="GuoYL&#39;s Notes">
+<meta property="og:description" content="最近在学习pyspark的开发，遇到些问题记录下。 我们在开发pyspark时经常需要进行测试，自己电脑上安装搭建一个spark环境代价有点高，目前有的同事在开发时，通常是开发完把代码贴出到本地测试集群进行测试，因此，能不能借助pycharm里的一个功能，连接本地测试集群的pyspark进行执行呢，经过一番搜索终于实现了这一个功能。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://guoyanlei.top/img/pycharm/new-project.png">
+<meta property="og:image" content="http://guoyanlei.top/img/pycharm/interpreter.png">
+<meta property="og:image" content="http://guoyanlei.top/img/pycharm/ssh-interpreter.png">
+<meta property="og:image" content="http://guoyanlei.top/img/pycharm/ssh-interpreter-2.png">
+<meta property="og:image" content="http://guoyanlei.top/img/pycharm/interpreter-2.png">
+<meta property="og:image" content="http://guoyanlei.top/img/pycharm/run-configuration.png">
+<meta property="og:image" content="http://guoyanlei.top/img/pycharm/running.png">
+<meta property="article:published_time" content="2018-08-01T07:30:00.000Z">
+<meta property="article:modified_time" content="2018-08-02T04:56:01.835Z">
+<meta property="article:author" content="Guo Yanlei">
+<meta property="article:tag" content="pyspark">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://guoyanlei.top/img/pycharm/new-project.png">
+  
+    <link rel="alternate" href="/atom.xml" title="GuoYL&#39;s Notes" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/hiero.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+  <!-- Custom CSS -->
+  
+<link rel="stylesheet" href="/css/my.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<script>
+var themeMenus = {};
+
+  themeMenus["/"] = "首页"; 
+
+  themeMenus["/archives"] = "归档"; 
+
+  themeMenus["/categories"] = "分类"; 
+
+  themeMenus["/tags"] = "标签"; 
+
+  themeMenus["/about"] = "关于"; 
+
+</script>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  <header id="allheader" class="site-header" role="banner">
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="GuoYL&#39;s Notes" rel="home"> GuoYL&#39;s Notes </a>
+            
+          </h1>
+
+          
+            <div class="site-description">大志非才不就，大才非学不成</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+            <div class="clearfix sf-menu">
+
+              <ul id="main-nav" class="nmenu sf-js-enabled">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+
+      </div>
+  </div>
+</header>
+
+
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-2018080201-PyCharm本地开发pyspark并提交远程执行" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      PyCharm本地开发pyspark并提交远程执行
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	Posted on <a href="/2018/08/01/2018080201-PyCharm%E6%9C%AC%E5%9C%B0%E5%BC%80%E5%8F%91pyspark%E5%B9%B6%E6%8F%90%E4%BA%A4%E8%BF%9C%E7%A8%8B%E6%89%A7%E8%A1%8C/" class="article-date">
+	  <time datetime="2018-08-01T07:30:00.000Z" itemprop="datePublished">八月 1, 2018</time>
+	</a>
+
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在学习pyspark的开发，遇到些问题记录下。</p>
+<p>我们在开发pyspark时经常需要进行测试，自己电脑上安装搭建一个spark环境代价有点高，目前有的同事在开发时，通常是开发完把代码贴出到本地测试集群进行测试，因此，能不能借助pycharm里的一个功能，连接本地测试集群的pyspark进行执行呢，经过一番搜索终于实现了这一个功能。</p>
+<a id="more"></a>
+<h3 id="新建带有Virtualenv的工程"><a href="#新建带有Virtualenv的工程" class="headerlink" title="新建带有Virtualenv的工程"></a>新建带有Virtualenv的工程</h3><p>Virtualenv是什么？</p>
+<p>Python 的第三方包成千上万，在一个 Python 环境下开发时间越久、安装依赖越多，就越容易出现依赖包冲突的问题。为了解决这个问题，开发者们开发出了 virtualenv，可以搭建虚拟且独立的 Python 环境。这样就可以使每个项目环境与其他项目独立开来，保持环境的干净，解决包冲突问题。</p>
+<p>下面我们先见一个project，在pycharm中默认的是Virtualenv管理环境，当然还有conda，功能和Virtualenv类似。</p>
+<p><img src="/img/pycharm/new-project.png" alt="Virtualenv的工程"></p>
+<h3 id="开发-amp-导入pyspark"><a href="#开发-amp-导入pyspark" class="headerlink" title="开发&amp;导入pyspark"></a>开发&amp;导入pyspark</h3><p>新建一个py文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">from pyspark import SparkContext</span><br><span class="line">from pyspark.sql import HiveContext</span><br><span class="line"></span><br><span class="line">APP_NAME = &apos;APP_TEST&apos;</span><br><span class="line"></span><br><span class="line">sc = SparkContext(appName=APP_NAME)</span><br><span class="line">sqlContext = HiveContext(sc)</span><br><span class="line"></span><br><span class="line">sqlContext.sql(&quot;show databases&quot;).show()</span><br></pre></td></tr></table></figure>
+<p>引入未安装的包时，pycharm会提示安装，安装需借助pip安装，若为安装pip需先安装，安装完成后会在项目目录：venv/lib/python2.7/site-packages 中出现安装好的第三方库。</p>
+<p>至此，我们就可以开发和使用pyspark中的一些文件了。</p>
+<p>开发是方便，但是我们还想变开发变测试，由于本地并没有装大数据相关环境，因此，我们还需要做些配置，来远程提交我们的代码并执行测试。</p>
+<h3 id="提交远程执行"><a href="#提交远程执行" class="headerlink" title="提交远程执行"></a>提交远程执行</h3><h4 id="配置远程project-interpreter（程序解释器）"><a href="#配置远程project-interpreter（程序解释器）" class="headerlink" title="配置远程project interpreter（程序解释器）"></a>配置远程project interpreter（程序解释器）</h4><p>打开pycharm的prefrences配置，从中找到我们项目的project interpreter。</p>
+<p><img src="/img/pycharm/interpreter.png" alt="project interpreter"></p>
+<p>图中展示的是我们本机中导入的程序解释器，我们还可以点击右上方配置按钮，添加远程的程序解释器。</p>
+<p><img src="/img/pycharm/ssh-interpreter.png" alt="ssh-interpreter"></p>
+<p>在配置中添加远程服务器的主机ip和用户、密码</p>
+<p><img src="/img/pycharm/ssh-interpreter-2.png" alt="ssh-interpreter-2"></p>
+<p>在最后一页，可以看到，远程服务器中python的位置。我们在执行程序时，pycharm会自动的将我们的最新代码提交的远程的目录下（/tmp/pycharm_project_237）</p>
+<p>当我们切换到远程的project interpreter时，就会看到远程的一些库。我们在开发时，远程服务器缺少哪些库，就需要先到服务器上安装好那些库，之后才可以提交到远程执行，否则会报no module find。</p>
+<p><img src="/img/pycharm/interpreter-2.png" alt="project interpreter remote"></p>
+<h4 id="远程执行"><a href="#远程执行" class="headerlink" title="远程执行"></a>远程执行</h4><p>上面的配置完成后，就可以在当前文件的Edit Configuration中进行执行配置，在project interpreter选项中可以选择是使用本地的程序解释器还是远程程序解释器执行了。</p>
+<p><img src="/img/pycharm/run-configuration.png" alt="Edit Configuration"></p>
+<p>执行上面定义好的的程序。</p>
+<p><img src="/img/pycharm/running.png" alt="Running"></p>
+<p>可以看出，实际程序执行的是同步到远程服务器的代码。并借助ssh登录到远程服务器执行，并返回执行的结果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh://root@node102.bigdata.dmp.local.com:22/usr/bin/python -u /tmp/pycharm_project_568/suishen/uid_to_mongo.py</span><br></pre></td></tr></table></figure>
+<p>这样就很方便了，不需要每次边写代码，边复制粘贴进行测试了。</p>
+<h3 id="CDH-spark在执行时遇到的问题"><a href="#CDH-spark在执行时遇到的问题" class="headerlink" title="CDH-spark在执行时遇到的问题"></a>CDH-spark在执行时遇到的问题</h3><p>由于服务器安装的是CDH版本的spark，因此，在执行pyspark程序时需要指定SPARK_HOME。</p>
+<p>解决方案有很多种，可参考（<a href="https://blog.csdn.net/syani/article/details/72851425）" target="_blank" rel="noopener">https://blog.csdn.net/syani/article/details/72851425）</a></p>
+<p>我们使用的是第二种，在代码中灵活的配置SPARK_HOME和其他的环境地址。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">import sys</span><br><span class="line"></span><br><span class="line">os.environ[&apos;SPARK_HOME&apos;] = &quot;/data/dmp/cloudera/parcels/CDH-5.12.2-1.cdh5.12.2.p0.4/lib/spark&quot;</span><br><span class="line">sys.path.append(&quot;/data/dmp/cloudera/parcels/CDH-5.12.2-1.cdh5.12.2.p0.4/lib/spark/python&quot;)</span><br><span class="line">sys.path.append(&quot;/data/dmp/cloudera/parcels/CDH-5.12.2-1.cdh5.12.2.p0.4/lib/spark/python/lib/py4j-0.9-src.zip&quot;)</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/pyspark/">pyspark</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pyspark/" rel="tag">pyspark</a></li></ul>
+
+            
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/10/2018081001-CDH-HDFS%E8%AF%AF%E5%88%A0HA%E7%9A%84namenode%E5%90%8E%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          CDH-HDFS误删HA的namenode后无法启动
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/18/2018071801-%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E5%9C%A8%E5%85%AC%E5%8F%B8%E7%9A%84%E5%BA%94%E7%94%A8%E4%B8%8E%E6%BC%94%E5%8F%98/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">分布式数据仓库在公司的应用与演变</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E5%BB%BA%E5%B8%A6%E6%9C%89Virtualenv%E7%9A%84%E5%B7%A5%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">新建带有Virtualenv的工程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%8F%91-amp-%E5%AF%BC%E5%85%A5pyspark"><span class="nav-number">2.</span> <span class="nav-text">开发&amp;导入pyspark</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E4%BA%A4%E8%BF%9C%E7%A8%8B%E6%89%A7%E8%A1%8C"><span class="nav-number">3.</span> <span class="nav-text">提交远程执行</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E8%BF%9C%E7%A8%8Bproject-interpreter%EF%BC%88%E7%A8%8B%E5%BA%8F%E8%A7%A3%E9%87%8A%E5%99%A8%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">配置远程project interpreter（程序解释器）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9C%E7%A8%8B%E6%89%A7%E8%A1%8C"><span class="nav-number">3.2.</span> <span class="nav-text">远程执行</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CDH-spark%E5%9C%A8%E6%89%A7%E8%A1%8C%E6%97%B6%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">CDH-spark在执行时遇到的问题</span></a></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+      <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2020 GuoYL&#39;s Notes All Rights Reserved.
+          
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hiero" target="_blank">hiero</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var contentdiv = document.getElementById("content");
+
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+</script>
+
+<!-- Custome JS -->
+
+<script src="/js/my.js"></script>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>

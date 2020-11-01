@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  
+  <title>cdh安装phoenix&amp;表数据导入导出 | GuoYL&#39;s Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="phoenixpig" />
+  
+  
+  
+  
+  <meta name="description" content="本文记录下CDH安装Phoenix所注意到事项，以及Pheonix表数据的导入导出。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CDH安装phoenix&amp;表数据导入导出">
+<meta property="og:url" content="http://guoyanlei.top/2018/05/22/2018052202-CDH%E5%AE%89%E8%A3%85phoenix&%E8%A1%A8%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA/index.html">
+<meta property="og:site_name" content="GuoYL&#39;s Notes">
+<meta property="og:description" content="本文记录下CDH安装Phoenix所注意到事项，以及Pheonix表数据的导入导出。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-05-22T07:30:04.000Z">
+<meta property="article:modified_time" content="2019-02-18T09:38:41.453Z">
+<meta property="article:author" content="Guo Yanlei">
+<meta property="article:tag" content="phoenix">
+<meta property="article:tag" content="pig">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="GuoYL&#39;s Notes" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/hiero.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+  <!-- Custom CSS -->
+  
+<link rel="stylesheet" href="/css/my.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<script>
+var themeMenus = {};
+
+  themeMenus["/"] = "首页"; 
+
+  themeMenus["/archives"] = "归档"; 
+
+  themeMenus["/categories"] = "分类"; 
+
+  themeMenus["/tags"] = "标签"; 
+
+  themeMenus["/about"] = "关于"; 
+
+</script>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  <header id="allheader" class="site-header" role="banner">
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="GuoYL&#39;s Notes" rel="home"> GuoYL&#39;s Notes </a>
+            
+          </h1>
+
+          
+            <div class="site-description">大志非才不就，大才非学不成</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+            <div class="clearfix sf-menu">
+
+              <ul id="main-nav" class="nmenu sf-js-enabled">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+
+      </div>
+  </div>
+</header>
+
+
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-2018052202-CDH安装phoenix&amp;表数据导入导出" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      CDH安装phoenix&amp;表数据导入导出
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	Posted on <a href="/2018/05/22/2018052202-CDH%E5%AE%89%E8%A3%85phoenix&%E8%A1%A8%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA/" class="article-date">
+	  <time datetime="2018-05-22T07:30:04.000Z" itemprop="datePublished">五月 22, 2018</time>
+	</a>
+
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文记录下CDH安装Phoenix所注意到事项，以及Pheonix表数据的导入导出。</p>
+<a id="more"></a>
+<h3 id="cloudera-manager-安装pheonix"><a href="#cloudera-manager-安装pheonix" class="headerlink" title="cloudera manager 安装pheonix"></a>cloudera manager 安装pheonix</h3><p>下面总结Cloudera Manager安装并使用pheonix的步骤。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">1. 下载pheonix-CDH版本 phoenix-4.13.2-cdh5.11.2</span><br><span class="line">2. 拷贝到一个节点，并解压</span><br><span class="line">3. 将phoenix-4.13.2-cdh5.11.2-server.jar 拷贝到Hbase集群的每一个Master和Region Server节点的/data/dmp/cloudera/parcels/CDH/lib/hbase/lib/</span><br><span class="line">4. 重启Hbase节点</span><br><span class="line">5. 建立启动脚本（./sqlline.py node1.zk.bigdata.dmp.com,node2.zk.bigdata.dmp.com,node3.zk.bigdata.dmp.com:2181:/hbase）</span><br><span class="line">6. 若想在hive中通过PhoenixStorageHandler方式读取pheonix中的数据，则需将phoenix-4.13.2-cdh5.11.2-client.jar 和 phoenix-hive-4.13.2-cdh5.11.2.jar 拷贝到每个HiveServer节点的/data/dmp/cloudera/parcels/CDH/lib/hive/lib下</span><br><span class="line">7. 重启HiveServer</span><br></pre></td></tr></table></figure>
+<h3 id="使用Hive读写phoenix"><a href="#使用Hive读写phoenix" class="headerlink" title="使用Hive读写phoenix"></a>使用Hive读写phoenix</h3><p>在数据仓库Hive中最常用的场景就是将计算完的数据写入到phoenix，方便之后使用phoenix来查询。</p>
+<p>方式就是在hive中建立与phoenix映射的外部表，建立之前需完成安装步骤中的6，7，建立完成后即可读写phoenix的数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">-- phoenix外部表（hive执行）</span><br><span class="line">add jar hdfs://nameservice:8020/user/udf/phoenix-4.13.2-cdh5.11.2-hive.jar;</span><br><span class="line">CREATE EXTERNAL TABLE dws_phoenix_log_project_table_id(</span><br><span class="line">    m_item_id     string,</span><br><span class="line">    app_key       string,</span><br><span class="line">    project       string,</span><br><span class="line">    p_table       string,</span><br><span class="line">    stat_date     string,</span><br><span class="line">    t_module      string</span><br><span class="line">)</span><br><span class="line">STORED BY  &quot;org.apache.phoenix.hive.PhoenixStorageHandler&quot;</span><br><span class="line">TBLPROPERTIES(</span><br><span class="line">    &quot;phoenix.table.name&quot; = &quot;DWS_PHOENIX_DMP_LOG_PROJECT_TABLE_ID&quot;,</span><br><span class="line">    &quot;phoenix.zookeeper.quorum&quot; = &quot;node1.zk.bigdata.dmp.com,node2.zk.bigdata.dmp.com,node3.zk.bigdata.dmp.com&quot;,</span><br><span class="line">    &quot;phoenix.zookeeper.znode.parent&quot; = &quot;/hbase&quot;,</span><br><span class="line">    &quot;phoenix.zookeeper.client.port&quot; = &quot;2181&quot;,</span><br><span class="line">    &quot;phoenix.rowkeys&quot; = &quot;M_ITEM_ID,APP_KEY,PROJECT,P_TABLE,STAT_DATE&quot;,</span><br><span class="line">    &quot;phoenix.column.mapping&quot; = &quot;m_item_id:M_ITEM_ID,app_key:APP_KEY,project:PROJECT,p_table:P_TABLE,stat_date:STAT_DATE,t_module:T_MODULE&quot;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h3 id="使用Pig将phoenix表数据批量导出"><a href="#使用Pig将phoenix表数据批量导出" class="headerlink" title="使用Pig将phoenix表数据批量导出"></a>使用Pig将phoenix表数据批量导出</h3><p>Phoenix提供了BulkLoad工具，使得用户可以将大数据量的csv格式数据高效地通过phoenix导入hbase<br>，那么phoenix是否也存在高效导出csv数据的工具类呢？</p>
+<p>幸运的是phoenix官方确实提供了一个高效的导出工具类，但是必须依赖于pig。</p>
+<p>官方文档：<a href="https://phoenix.apache.org/pig_integration.html" target="_blank" rel="noopener">https://phoenix.apache.org/pig_integration.html</a></p>
+<p>Pig是SQL-like语言，是在MapReduce上构建的一种高级查询语言，把一些运算编译进MapReduce模型的Map和Reduce中，并且用户可以定义自己的功能。</p>
+<p>Cloudera Manager默认安装pig，可在集群任意节点启动pig客户端。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">运行</span><br><span class="line">- pig</span><br><span class="line">- pig -x mapreduce</span><br></pre></td></tr></table></figure>
+<p>下面给出一个批量导出phoenix表数据的Pig脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">REGISTER /data/dmp/phoenix/phoenix-4.13.2-cdh5.11.2-client.jar</span><br><span class="line">rows = load &apos;hbase://table/DWS_PHOENIX_DMP_LOG_PROJECT_TABLE_ID&apos; USING org.apache.phoenix.pig.PhoenixHBaseLoader(&apos;node1.zk.bigdata.dmp.com,node2.zk.bigdata.dmp.com,node3.zk.bigdata.dmp.com&apos;); </span><br><span class="line">STORE rows INTO &apos;/user/hive/warehouse/test.db/dws_phoenix_log_project_table_id&apos; USING PigStorage(&apos;,&apos;);</span><br><span class="line"></span><br><span class="line">默认的导出路径是保存在HDFS中的，之后可以建立Hive外部表读取文件中的数据</span><br><span class="line"></span><br><span class="line"># 还可以批量导出部分字段</span><br><span class="line">A = load &apos;hbase://table/DWS_PHOENIX_DMP_LOG_PROJECT_TABLE_ID/APP_KEY,PROJECT&apos; using org.apache.phoenix.pig.PhoenixHBaseLoader(&apos;xxx&apos;);</span><br><span class="line"></span><br><span class="line"># 也可以批量某一SQL的数据</span><br><span class="line">A = load &apos;hbase://query/SELECT ID,NAME FROM DWS_PHOENIX_DMP_LOG_PROJECT_TABLE_ID WHERE APP_KEY = 111&apos; using org.apache.phoenix.pig.PhoenixHBaseLoader(&apos;xxx&apos;);</span><br><span class="line"></span><br><span class="line">- Only a SELECT query is allowed. No DML statements such as UPSERT or DELETE.</span><br><span class="line">- The query may not contain any GROUP BY, ORDER BY, LIMIT, or DISTINCT clauses.</span><br><span class="line">- The query may not contain any AGGREGATE functions.</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/pheonix/">pheonix</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/phoenix/" rel="tag">phoenix</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pig/" rel="tag">pig</a></li></ul>
+
+            
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/05/22/2018052201-Hive%E8%B7%A8%E9%9B%86%E7%BE%A4%E8%AE%BF%E9%97%AEhbase%E5%92%8Cphoenix%E8%A1%A8/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Hive跨集群访问hbase和phoenix表
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/05/22/2018052201-Hive%E8%A1%A8%E8%B7%A8%E9%9B%86%E7%BE%A4%E8%BF%81%E7%A7%BB/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Hive表跨集群迁移</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#cloudera-manager-%E5%AE%89%E8%A3%85pheonix"><span class="nav-number">1.</span> <span class="nav-text">cloudera manager 安装pheonix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Hive%E8%AF%BB%E5%86%99phoenix"><span class="nav-number">2.</span> <span class="nav-text">使用Hive读写phoenix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Pig%E5%B0%86phoenix%E8%A1%A8%E6%95%B0%E6%8D%AE%E6%89%B9%E9%87%8F%E5%AF%BC%E5%87%BA"><span class="nav-number">3.</span> <span class="nav-text">使用Pig将phoenix表数据批量导出</span></a></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+      <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2020 GuoYL&#39;s Notes All Rights Reserved.
+          
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hiero" target="_blank">hiero</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var contentdiv = document.getElementById("content");
+
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+</script>
+
+<!-- Custome JS -->
+
+<script src="/js/my.js"></script>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>

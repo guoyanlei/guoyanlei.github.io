@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  
+  <title>hive-jdbc连接hiveserver2传递参数 | GuoYL&#39;s Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="hiveHiveServer2" />
+  
+  
+  
+  
+  <meta name="description" content="HiveServer2（以下简称：HS2）是Hive提供的一种jdbc服务，用户可以通过Hive自带的Beeline连接，也可以使用Java、Python或者PHP等通过jdbc的方式连接。下面以Java连接HiveServer2为例来介绍几种向Hive传递参数的方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive-JDBC连接HiveServer2传递参数">
+<meta property="og:url" content="http://guoyanlei.top/2018/05/20/2018052001-Hive-JDBC%E8%BF%9E%E6%8E%A5HiveServer2%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0/index.html">
+<meta property="og:site_name" content="GuoYL&#39;s Notes">
+<meta property="og:description" content="HiveServer2（以下简称：HS2）是Hive提供的一种jdbc服务，用户可以通过Hive自带的Beeline连接，也可以使用Java、Python或者PHP等通过jdbc的方式连接。下面以Java连接HiveServer2为例来介绍几种向Hive传递参数的方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-05-20T14:30:04.000Z">
+<meta property="article:modified_time" content="2018-05-25T04:39:11.845Z">
+<meta property="article:author" content="Guo Yanlei">
+<meta property="article:tag" content="hive">
+<meta property="article:tag" content="HiveServer2">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="GuoYL&#39;s Notes" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/hiero.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+  <!-- Custom CSS -->
+  
+<link rel="stylesheet" href="/css/my.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<script>
+var themeMenus = {};
+
+  themeMenus["/"] = "首页"; 
+
+  themeMenus["/archives"] = "归档"; 
+
+  themeMenus["/categories"] = "分类"; 
+
+  themeMenus["/tags"] = "标签"; 
+
+  themeMenus["/about"] = "关于"; 
+
+</script>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  <header id="allheader" class="site-header" role="banner">
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="GuoYL&#39;s Notes" rel="home"> GuoYL&#39;s Notes </a>
+            
+          </h1>
+
+          
+            <div class="site-description">大志非才不就，大才非学不成</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+            <div class="clearfix sf-menu">
+
+              <ul id="main-nav" class="nmenu sf-js-enabled">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+
+      </div>
+  </div>
+</header>
+
+
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-2018052001-Hive-JDBC连接HiveServer2传递参数" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Hive-JDBC连接HiveServer2传递参数
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	Posted on <a href="/2018/05/20/2018052001-Hive-JDBC%E8%BF%9E%E6%8E%A5HiveServer2%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0/" class="article-date">
+	  <time datetime="2018-05-20T14:30:04.000Z" itemprop="datePublished">五月 20, 2018</time>
+	</a>
+
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>HiveServer2（以下简称：HS2）是Hive提供的一种jdbc服务，用户可以通过Hive自带的Beeline连接，也可以使用Java、Python或者PHP等通过jdbc的方式连接。下面以Java连接HiveServer2为例来介绍几种向Hive传递参数的方法。</p>
+<a id="more"></a>
+<h3 id="Java-JDBC连接HS2"><a href="#Java-JDBC连接HS2" class="headerlink" title="Java-JDBC连接HS2"></a>Java-JDBC连接HS2</h3><p>连接到HS2，一般需要提供HS2的地址、端口号、连接的Hive库、用户名和密码这几个必选项，示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Class.forName(&quot;org.apache.hive.jdbc.HiveDriver&quot;);</span><br><span class="line">Properties info = new Properties();</span><br><span class="line">info.setProperty(&quot;user&quot;, &quot;user_name&quot;);</span><br><span class="line">info.setProperty(&quot;password&quot;, &quot;passwd&quot;);</span><br><span class="line">String JDBC_URL=&quot;jdbc:hive2://localhost:10000/default&quot;;</span><br><span class="line">Connection conn = DriverManager.getConnection(JDBC_URL, info);</span><br><span class="line">HiveStatement stat = (HiveStatement) conn.createStatement();</span><br></pre></td></tr></table></figure>
+<p>只要URL、用户名和密码正确的话，通过上面的示例代码，就可以连接到HS2执行操作了。但是往往这样还不够，如果我们想通过传递一些Hive的配置信息，那该怎么办呢？</p>
+<h3 id="传递参数"><a href="#传递参数" class="headerlink" title="传递参数"></a>传递参数</h3><h4 id="1-类HiveClient方式"><a href="#1-类HiveClient方式" class="headerlink" title="1.类HiveClient方式"></a>1.类HiveClient方式</h4><p>使用过Hive客户端的用户都知道，如果我们想改变Hive的某一项客户端配置的话，可以通过set hive_conf_key=hive_conf_value;的方式来修改。由此，很自然的我们会想到在获得了一个JDBC的连接后，我们执行一下上面的语句不就可以了。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 我们执行一些复杂的sql的时候，往往需要制定一个队列，假设队列的名字为&quot;root.hive-server2&quot;</span><br><span class="line">stat.execute(&quot;set mapreduce.job.queuename=root.hive-server2&quot;);</span><br></pre></td></tr></table></figure>
+<p>NOTE：需要注意的是，execute中的set语句不能包含分号（不能是set mapreduce.job.queuename=root.hive-server2;），这是和客户端的区别，否则不生效</p>
+<h4 id="2-在JDBC-URL中传"><a href="#2-在JDBC-URL中传" class="headerlink" title="2.在JDBC URL中传"></a>2.在JDBC URL中传</h4><p>对jdbc比较熟悉的用户，都知道可以在jdbc的连接中传递一些参数，hive也一样支持。对于上面的需求，可以把充分利用JDBC_URL。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String JDBC_URL=&quot;jdbc:hive2://localhost:10000/default?mapreduce.job.queuename=root.hive-server2;hive.cli.print.header=false&quot;;</span><br><span class="line">Connection conn = DriverManager.getConnection(JDBC_URL, info);</span><br></pre></td></tr></table></figure>
+<p>NOTE：普通的jdbc传递参数不一样的地方，那就是这里是通过使用分号来分割多个hive的配置变量的，而不是使用’&amp;’。</p>
+<p>NOTE：另外，这里传递hive配置和hive变量还是有区别的，Hive是通过’#’来分割Hive配置列表和Hive变量列表的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 源码HiveConnection.java有说明</span><br><span class="line">// JDBC URL: jdbc:hive2://&lt;host&gt;:&lt;port&gt;/dbName;sess_var_list?hive_conf_list#hive_var_list</span><br><span class="line">// each list: &lt;key1&gt;=&lt;val1&gt;;&lt;key2&gt;=&lt;val2&gt; and so on</span><br><span class="line"></span><br><span class="line">参考：</span><br><span class="line">https://cwiki.apache.org/confluence/display/Hive/HiveServer2+Clients#HiveServer2Clients-UsingJDBC</span><br></pre></td></tr></table></figure>
+<h4 id="3-通过连接属性配置"><a href="#3-通过连接属性配置" class="headerlink" title="3.通过连接属性配置"></a>3.通过连接属性配置</h4><p>如果需要传递的配置数目比较多，使用上面的方法，难免有点冗余和负杂，URL将会变得特别长。其实，我们可以像配置user和password一样来传递配置。区别于user和password配置方式的地方是，必须明确指出配置的是一个hive_conf还是hive_var，否则配置不会生效。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Class.forName(&quot;org.apache.hive.jdbc.HiveDriver&quot;);</span><br><span class="line">Properties info = new Properties();</span><br><span class="line">info.setProperty(&quot;user&quot;, &quot;user_name&quot;);</span><br><span class="line">info.setProperty(&quot;password&quot;, &quot;passwd&quot;);</span><br><span class="line">// 这里传递了一个队列的hive_conf</span><br><span class="line">info.setProperty(&quot;hiveconf:mapreduce.job.queuename&quot;, &quot;root.hive-server2&quot;);</span><br><span class="line">String JDBC_URL=&quot;jdbc:hive2://localhost:10000/default&quot;;</span><br><span class="line">Connection conn = DriverManager.getConnection(JDBC_URL, info);</span><br><span class="line">HiveStatement stat = (HiveStatement) conn.createStatement();</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/hive/">hive</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HiveServer2/" rel="tag">HiveServer2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hive/" rel="tag">hive</a></li></ul>
+
+            
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/05/21/2018052101-cloudera-manager%E4%B8%AD%E4%BD%BF%E7%94%A8sqoop/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          cloudera-manager中使用sqoop
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/05/19/2018051901-azkaban3.0%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">azkaban3.0使用记录</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java-JDBC%E8%BF%9E%E6%8E%A5HS2"><span class="nav-number">1.</span> <span class="nav-text">Java-JDBC连接HS2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">传递参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E7%B1%BBHiveClient%E6%96%B9%E5%BC%8F"><span class="nav-number">2.1.</span> <span class="nav-text">1.类HiveClient方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%9C%A8JDBC-URL%E4%B8%AD%E4%BC%A0"><span class="nav-number">2.2.</span> <span class="nav-text">2.在JDBC URL中传</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E9%80%9A%E8%BF%87%E8%BF%9E%E6%8E%A5%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE"><span class="nav-number">2.3.</span> <span class="nav-text">3.通过连接属性配置</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+      <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2020 GuoYL&#39;s Notes All Rights Reserved.
+          
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hiero" target="_blank">hiero</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var contentdiv = document.getElementById("content");
+
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+</script>
+
+<!-- Custome JS -->
+
+<script src="/js/my.js"></script>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>

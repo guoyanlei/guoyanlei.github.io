@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  
+  <title>qcon2019大数据平台架构相关总结 | GuoYL&#39;s Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="kafka架构" />
+  
+  
+  
+  
+  <meta name="description" content="1. 快手万亿级别Kafka集群应用实践与技术演进应用实践快手对Kafka的三个重要应用场景：  在线集群：在线服务消息中间件 Log集群：业务系统日志收集和传输的缓存介质，之后面向重要的实时消费和数据处理 离线集群：是所有各种日志的最终汇聚点，一方面落地到数仓；另一方面面向次重要的实时消费和数据处理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="QCon2019大数据平台架构相关总结">
+<meta property="og:url" content="http://guoyanlei.top/2019/05/08/2019050801-QCon2019%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84%E7%9B%B8%E5%85%B3%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="GuoYL&#39;s Notes">
+<meta property="og:description" content="1. 快手万亿级别Kafka集群应用实践与技术演进应用实践快手对Kafka的三个重要应用场景：  在线集群：在线服务消息中间件 Log集群：业务系统日志收集和传输的缓存介质，之后面向重要的实时消费和数据处理 离线集群：是所有各种日志的最终汇聚点，一方面落地到数仓；另一方面面向次重要的实时消费和数据处理">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://guoyanlei.top/img/qcon/kuaishou-kafka-1.png">
+<meta property="og:image" content="http://guoyanlei.top/img/qcon/didi-bigdata-platform-1.png">
+<meta property="og:image" content="http://guoyanlei.top/img/qcon/didi-bigdata-platform-2.png">
+<meta property="og:image" content="http://guoyanlei.top/img/qcon/didi-bigdata-platform-3.png">
+<meta property="og:image" content="http://guoyanlei.top/img/qcon/didi-bigdata-platform-4.png">
+<meta property="og:image" content="http://guoyanlei.top/img/qcon/suning-olap-1.png">
+<meta property="og:image" content="http://guoyanlei.top/img/qcon/suning-olap-2.png">
+<meta property="og:image" content="http://guoyanlei.top/img/qcon/suning-olap-3.png">
+<meta property="og:image" content="http://guoyanlei.top/img/qcon/toutiao-clickhouse-1.png">
+<meta property="article:published_time" content="2019-05-08T07:30:00.000Z">
+<meta property="article:modified_time" content="2019-05-09T10:57:26.113Z">
+<meta property="article:author" content="Guo Yanlei">
+<meta property="article:tag" content="kafka">
+<meta property="article:tag" content="架构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://guoyanlei.top/img/qcon/kuaishou-kafka-1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="GuoYL&#39;s Notes" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/hiero.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+  <!-- Custom CSS -->
+  
+<link rel="stylesheet" href="/css/my.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<script>
+var themeMenus = {};
+
+  themeMenus["/"] = "首页"; 
+
+  themeMenus["/archives"] = "归档"; 
+
+  themeMenus["/categories"] = "分类"; 
+
+  themeMenus["/tags"] = "标签"; 
+
+  themeMenus["/about"] = "关于"; 
+
+</script>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  <header id="allheader" class="site-header" role="banner">
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="GuoYL&#39;s Notes" rel="home"> GuoYL&#39;s Notes </a>
+            
+          </h1>
+
+          
+            <div class="site-description">大志非才不就，大才非学不成</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+            <div class="clearfix sf-menu">
+
+              <ul id="main-nav" class="nmenu sf-js-enabled">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+
+      </div>
+  </div>
+</header>
+
+
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-2019050801-QCon2019大数据平台架构相关总结" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      QCon2019大数据平台架构相关总结
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	Posted on <a href="/2019/05/08/2019050801-QCon2019%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84%E7%9B%B8%E5%85%B3%E6%80%BB%E7%BB%93/" class="article-date">
+	  <time datetime="2019-05-08T07:30:00.000Z" itemprop="datePublished">五月 8, 2019</time>
+	</a>
+
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="1-快手万亿级别Kafka集群应用实践与技术演进"><a href="#1-快手万亿级别Kafka集群应用实践与技术演进" class="headerlink" title="1. 快手万亿级别Kafka集群应用实践与技术演进"></a>1. 快手万亿级别Kafka集群应用实践与技术演进</h3><h4 id="应用实践"><a href="#应用实践" class="headerlink" title="应用实践"></a>应用实践</h4><p>快手对Kafka的三个重要应用场景：</p>
+<ul>
+<li>在线集群：在线服务消息中间件</li>
+<li>Log集群：业务系统日志收集和传输的缓存介质，之后面向重要的实时消费和数据处理</li>
+<li>离线集群：是所有各种日志的最终汇聚点，一方面落地到数仓；另一方面面向次重要的实时消费和数据处理</li>
+</ul>
+<a id="more"></a>
+<p>业务场景架构如下：</p>
+<p><img src="/img/qcon/kuaishou-kafka-1.png" alt="kuaishou-kafka-1"></p>
+<p>其中，通过Mirror Service将多个在线集群和Log集群中数据汇总到离线集群</p>
+<h4 id="技术演进"><a href="#技术演进" class="headerlink" title="技术演进"></a>技术演进</h4><p>对kafka的使用做了如下优化：</p>
+<h5 id="优化一：kafka集群平滑扩容优化，解决了扩容节点时导致kafka集群物理资源大量消耗，影响producer写入"><a href="#优化一：kafka集群平滑扩容优化，解决了扩容节点时导致kafka集群物理资源大量消耗，影响producer写入" class="headerlink" title="优化一：kafka集群平滑扩容优化，解决了扩容节点时导致kafka集群物理资源大量消耗，影响producer写入"></a>优化一：kafka集群平滑扩容优化，解决了扩容节点时导致kafka集群物理资源大量消耗，影响producer写入</h5><ul>
+<li>问题：社区kafka对partition的迁移是从最初的offset开始的，触发读盘，物理资源大量消耗 =&gt; produce延迟增高且 抖动；扩容不平滑</li>
+<li>优化思路：从最新offset开始迁移，并同步一定时间，保障所有consumer都已经跟上（据说这一改进已经向社区提交了<a href="https://issues.apache.org/jira/browse/KAFKA-8328" target="_blank" rel="noopener">issues</a></li>
+</ul>
+<h5 id="优化二：Mirror集群化建设，摒弃了Apache-Kafka的Mirrormaker，基于uReplicator做了改进"><a href="#优化二：Mirror集群化建设，摒弃了Apache-Kafka的Mirrormaker，基于uReplicator做了改进" class="headerlink" title="优化二：Mirror集群化建设，摒弃了Apache Kafka的Mirrormaker，基于uReplicator做了改进"></a>优化二：Mirror集群化建设，摒弃了Apache Kafka的Mirrormaker，基于uReplicator做了改进</h5><ul>
+<li>问题：Apache Kafka的Mirrormaker是静态管理，运维成本高，易出错；当增加topic或集群时导致正在运行的数据Mirror整体断流</li>
+<li>优化思路：基于uber的<a href="https://github.com/uber/uReplicator" target="_blank" rel="noopener">UReplicator</a>做了改进，通过Mirror服务集群化管理，可减低运维，避免出错，支持快速调整，应对突增流量</li>
+</ul>
+<h5 id="优化三：资源隔离，将不同业务线的topic进行物理隔离，保证互不影响"><a href="#优化三：资源隔离，将不同业务线的topic进行物理隔离，保证互不影响" class="headerlink" title="优化三：资源隔离，将不同业务线的topic进行物理隔离，保证互不影响"></a>优化三：资源隔离，将不同业务线的topic进行物理隔离，保证互不影响</h5><ul>
+<li>问题1：不同业务线topic缺少物理隔离，会相互影响</li>
+<li>优化思路：根据不同的业务做到Broker级别物理隔离</li>
+<li>问题2：Kafka Rpc队列缺少隔离，一旦某个topic处理慢，会导致所有请求hang住</li>
+<li>优化思路：多RPC队列，进行隔离</li>
+</ul>
+<h5 id="优化四：对PageCache的改造，避免Consumer的lag读和Follower进行replica时可能产生的PageCache污染"><a href="#优化四：对PageCache的改造，避免Consumer的lag读和Follower进行replica时可能产生的PageCache污染" class="headerlink" title="优化四：对PageCache的改造，避免Consumer的lag读和Follower进行replica时可能产生的PageCache污染"></a>优化四：对PageCache的改造，避免Consumer的lag读和Follower进行replica时可能产生的PageCache污染</h5><ul>
+<li>问题：Kafka高性能依赖page cache，但page cache不可控（由操作系统管理），可能会被污染</li>
+<li>优化思路：让kafka自己维护数据cache，严格按照时间顺序cache，并控制follower的数据不进入cache</li>
+</ul>
+<h5 id="优化五：消费智能限速，解决了某个Consumer-lag延迟后读盘导致的producer写入受阻的问题"><a href="#优化五：消费智能限速，解决了某个Consumer-lag延迟后读盘导致的producer写入受阻的问题" class="headerlink" title="优化五：消费智能限速，解决了某个Consumer lag延迟后读盘导致的producer写入受阻的问题"></a>优化五：消费智能限速，解决了某个Consumer lag延迟后读盘导致的producer写入受阻的问题</h5><ul>
+<li>问题：某个Consumer lag延迟后读盘导致的producer写入受阻</li>
+<li>思路：当磁盘繁忙，针对lag的consumer进行限速控制</li>
+</ul>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>从应用实践中了解了kafka的三个重要应用场景，并对多kafka集群的Mirror Service有了新的认识，之后可以对uReplicator进行一些调研，看是否可应用到跨kafka集群的数据同步中。</p>
+<p>从技术演进中也就收获了一些kafka使用中可能遇到的问题和优化思路，看似思路都很简单，但是真正实施起来难度还是相当大的。</p>
+<h3 id="2-滴滴大数据研发平台最佳实践"><a href="#2-滴滴大数据研发平台最佳实践" class="headerlink" title="2. 滴滴大数据研发平台最佳实践"></a>2. 滴滴大数据研发平台最佳实践</h3><h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><p>大数据研发平台设计的初衷是：设计一个平台满足所有数据开发人员的数据分析、数据加工、模型训练等工作，同时做到数据安全的使用和管理，以及统一式的开发和运维，开发人员只关心自己的业务，不需要过多的底层。</p>
+<p>整个功能类似阿里的DataWorks。</p>
+<p>整体架构如下：</p>
+<p><img src="/img/qcon/didi-bigdata-platform-1.png" alt="didi-bigdata-platform-1"><br><img src="/img/qcon/didi-bigdata-platform-2.png" alt="didi-bigdata-platform-2"></p>
+<h4 id="主要工作"><a href="#主要工作" class="headerlink" title="主要工作"></a>主要工作</h4><h5 id="工作一：开发与生产隔离"><a href="#工作一：开发与生产隔离" class="headerlink" title="工作一：开发与生产隔离"></a>工作一：开发与生产隔离</h5><p>由于大数据开发的特殊性，经常会基于线上已有表的数据进行开发测试，这样就难免对线上的任务和数据有影响。</p>
+<p>解决这一问题的思路就是将开发和生产进行逻辑上的隔离，开发环境里允许对线上数据进行查询，但是结果落地时，写入的是测试的库，避免对线上库和表造成污染，待真正上线时，将发布包提交到生产环境，数据才会写入线上的库。</p>
+<p>这一点可以借鉴，但是需要平台化的管理，这块我们还是比较欠缺。</p>
+<h5 id="工作二：统一的任务执行平台"><a href="#工作二：统一的任务执行平台" class="headerlink" title="工作二：统一的任务执行平台"></a>工作二：统一的任务执行平台</h5><p>其实也是个逻辑的东西，将底层的执行引擎透明化，用一个统一的任务执行平台进行管理，在这个平台上可以提交离线任务、实时任务、机器学习、提数、特征分析等多种任务，任务在真正执行时是根据任务的具体类型来提交到不同的处理引擎上的。</p>
+<p>主要工作还是上层的抽象和封装。</p>
+<p><img src="/img/qcon/didi-bigdata-platform-3.png" alt="didi-bigdata-platform-3"></p>
+<h5 id="工作三：实时表元数据化"><a href="#工作三：实时表元数据化" class="headerlink" title="工作三：实时表元数据化"></a>工作三：实时表元数据化</h5><p>要实现开发实时就写SQL一样简单，首先要实现的就是实时表元数据化。</p>
+<p>其实Flink SQL已经实现了这种的写SQL来完成实时数据的处理，但是在开发时需要人为的创建表的Schema。</p>
+<p>他们做的工作就是提前将用到的各种实时表元数据化，用户在开发时只需要指定某个具体的表就可以实现实时任务的开发，不需要关心元数据是否创建。</p>
+<h5 id="工作四：基于列进行权限管理"><a href="#工作四：基于列进行权限管理" class="headerlink" title="工作四：基于列进行权限管理"></a>工作四：基于列进行权限管理</h5><p>这部分工作还是为数据安全来考虑的，向手机号、身份证等敏感信息，不应该向所有大数据开发人员可见，如何做到列基本的权限管理呢，这是这部分工作的初衷。</p>
+<p>我们其实已经基于Hue和Sentry有了对表级别的权限做了管控，但是在字段级别还没有好的解决思路。</p>
+<p>他们的实现方案：</p>
+<ul>
+<li>划分列的安全等级，1,2,3,4</li>
+<li>为列进行等级打标</li>
+<li>借助自研的安全管家服务，为用户实现授权</li>
+<li>底层基于Apache Ranger实现，安全管家会生成安全策略和授权传递给ranger</li>
+</ul>
+<p><img src="/img/qcon/didi-bigdata-platform-4.png" alt="didi-bigdata-platform-4"></p>
+<h4 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h4><p>这种平台化的东西也只有那些大厂才有能力和资源来做，也就收获了一些实现思路，具体怎么应用到我们的工作中，还需要很多路要走。</p>
+<h3 id="3-苏宁OLAP引擎发展之路"><a href="#3-苏宁OLAP引擎发展之路" class="headerlink" title="3. 苏宁OLAP引擎发展之路"></a>3. 苏宁OLAP引擎发展之路</h3><p>没get到太多干货，讲的最多的就是对查询引擎SparkSQL的进行了一些优化。</p>
+<p>主要包括：</p>
+<ul>
+<li>Spark-HDFS</li>
+<li>Spark-Druid</li>
+<li>ES-Hadoop</li>
+<li>PG-Spark-JDBC</li>
+</ul>
+<p>优化思路就是将查询SQL谓词下推，要充分利用各存储自身的查询性能，尽量避免把数据全部拉到集群中进行计算。</p>
+<p><img src="/img/qcon/suning-olap-1.png" alt="suning-olap-1"></p>
+<p>其OLAP整体架构：</p>
+<p><img src="/img/qcon/suning-olap-2.png" alt="suning-olap-2"></p>
+<p>数据中台架构：</p>
+<p><img src="/img/qcon/suning-olap-3.png" alt="suning-olap-3"></p>
+<h3 id="4-ClickHouse在头条的技术演进"><a href="#4-ClickHouse在头条的技术演进" class="headerlink" title="4. ClickHouse在头条的技术演进"></a>4. ClickHouse在头条的技术演进</h3><p>主要从两个部分进行介绍，一是头条为什么选择了ClickHouse及如何使用的，二是主要做了哪些优化</p>
+<p>由于自己对ClickHouse没做过多了解，第二部分优化没get到什么。</p>
+<h5 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h5><p>ClickHouse 2016年开源的，由俄罗斯IT公司Yandex开发，是一个用于联机分析(OLAP)的列式数据库管理系统(DBMS)，而且查询性能优越。</p>
+<p>主要特点：</p>
+<ul>
+<li>面向列+向量执行</li>
+<li>自己管理存储（非Hadoop）</li>
+<li>线性可扩展，高可靠（通过shard+replication实现）</li>
+<li>面向SQL查询</li>
+<li>快</li>
+</ul>
+<p>性能优越的原因：</p>
+<ul>
+<li>Data Skipping<ul>
+<li>分区及分区剪枝</li>
+<li>数据局部有序，类似LSM树的查询引擎</li>
+</ul>
+</li>
+<li>资源垂直整合<ul>
+<li>并发MPP+SMP架构</li>
+<li>执行层是SIMD实现（单指令多数据流）</li>
+</ul>
+</li>
+<li>底层C++实现</li>
+</ul>
+<p>使用的场景：</p>
+<ul>
+<li>单表分析，这个表可以很宽</li>
+<li>分布式Join性能并不出色</li>
+</ul>
+<p>不足：</p>
+<ul>
+<li>没有事务</li>
+<li>批量数据接收</li>
+<li>update or delete支持较弱</li>
+<li>查询重写优化较弱</li>
+</ul>
+<h5 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h5><p>头条选择ClickHouse的原因：</p>
+<ul>
+<li>产品需求<ul>
+<li>交互式分析能力（in seconds）</li>
+<li>查询模式多变</li>
+<li>以大宽表为主</li>
+<li>数据量大 </li>
+</ul>
+</li>
+<li>开源MPP OLAP引擎 - （性能、特点、优质）</li>
+</ul>
+<p>在头条的应用：</p>
+<p><img src="/img/qcon/toutiao-clickhouse-1.png" alt="toutiao-clickhouse-1"></p>
+<h5 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h5><p>目前ClickHouse商业应用还较少，只有部分大厂有使用，而且他们在使用过程中如果遇到一些问题，自己有能力和资源进行二研优化；更主要的是ClickHouse不理睬Hadoop生态，走自己的路。我们暂且了解观望。</p>
+<h3 id="5-美团点评常态、异地、多机房、单集群Hadoop架构实践"><a href="#5-美团点评常态、异地、多机房、单集群Hadoop架构实践" class="headerlink" title="5. 美团点评常态、异地、多机房、单集群Hadoop架构实践"></a>5. 美团点评常态、异地、多机房、单集群Hadoop架构实践</h3><p>原生Hadoop在跨机房，跨地域进行搭建时，网络的延迟会大大影响hadoop的管理和任务处理性能。</p>
+<p>但是有时候随着业务发展，集群节点越来越多，同地域的机房没办法承载，但是又不想搭建多个hadoop集群，此时就需要搭建这种跨机房、跨地域的hadoop集群了。</p>
+<p>美团通过二研实现了单集群异地多机房Hadoop服务，并且保证了管理和任务处理的性能，实现了架构前向兼容，机房对业务透明。</p>
+<p>整体思路，通过优化Hadoop，使得其有对地区的感知，尽量避免跨机房流量</p>
+<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><h5 id="第一步：多机房Hadoop资源管理"><a href="#第一步：多机房Hadoop资源管理" class="headerlink" title="第一步：多机房Hadoop资源管理"></a>第一步：多机房Hadoop资源管理</h5><ol>
+<li>多机房存储资源管理</li>
+</ol>
+<ul>
+<li>NameNode机房感知中增加了对地区的感知</li>
+<li>NameNode副本分布属性增加了地区的支持</li>
+<li>HDFS读写响应：保证吞吐，避免跨机房流量（仅向默认机房写⼊，就近读取）</li>
+<li>具备初级多机房存储资源管理理能⼒</li>
+</ul>
+<ol start="2">
+<li>多机房计算调度</li>
+</ol>
+<ul>
+<li>基于Label Scheduler的多机房计算资源调度，即在提交作业时附加上机房的标签，禁⽌止跨机房作业调度</li>
+<li>基于YARN Federation的跨地域计算资源调度，优先请求本地机房</li>
+</ul>
+<h5 id="第二步：多机房Hadoop资源管理"><a href="#第二步：多机房Hadoop资源管理" class="headerlink" title="第二步：多机房Hadoop资源管理"></a>第二步：多机房Hadoop资源管理</h5><ol>
+<li>跨机房数据Cache处理，就是基于数据⾎血缘产⽣和读写规律进行构建副本cache的规则（在本地机房冗余一些数据，减少重复跨机房的数据读取）</li>
+<li>带宽管控，充分利用好带宽</li>
+</ol>
+<h5 id="第三步：HDFS机房容错"><a href="#第三步：HDFS机房容错" class="headerlink" title="第三步：HDFS机房容错"></a>第三步：HDFS机房容错</h5><ol>
+<li>HDFS分区容忍设计粒度为节点级别，而不在是块级别</li>
+<li>实现机房、机架粒度容错，保证网络故障时，DataNode没有故障，数据没有丢失</li>
+</ol>
+<h4 id="总结-3"><a href="#总结-3" class="headerlink" title="总结"></a>总结</h4><p>收获了一些解决这样问题的思路，具体是否值得实现还得看业务。<br>技术换运营，站在平台运营视⻆角进行架构设计，才能保证架构平稳落地。</p>
+<h3 id="6-阿里巴巴新一代交互式分析引擎-Hologres"><a href="#6-阿里巴巴新一代交互式分析引擎-Hologres" class="headerlink" title="6. 阿里巴巴新一代交互式分析引擎-Hologres"></a>6. 阿里巴巴新一代交互式分析引擎-Hologres</h3><p>主要介绍了Hologres是啥，其设计理念是啥，性能有多么优越。。。</p>
+<p>Hologres是啥？</p>
+<ul>
+<li>新一代海量数据交互式分析引擎</li>
+<li>一套引擎支持Point Query(hbase场景)，Ad-hoc Query(Druid场景)，<br>OLAP Query(Impala场景) </li>
+<li>快。。</li>
+<li>存储计算分离</li>
+<li>支持实时数据与批量数据导入</li>
+<li>支持External Storage，与阿里云大数据产品无缝对接</li>
+</ul>
+<p>亮点&amp;理念？</p>
+<ul>
+<li>统一的引擎架构，保证数据的一致性<ul>
+<li>解决数据在Hbase存一份、Druid存一份、xxx存一份造成的浪费和数据不一致</li>
+</ul>
+</li>
+<li>存储和计算分离<ul>
+<li>据说新的NVME SSD盘可以达到150000IOPS，磁盘IO不再是性能瓶颈，问题转变为如何把CPU高效利用起来</li>
+<li>存储计算分离是未来大势所趋，存储和计算非对齐采购，成本更低，部署运维更方便</li>
+</ul>
+</li>
+<li>更加聪明的Optimizer</li>
+<li>使用新技术<ul>
+<li>近几年硬件性能提升的很快，N年前的技术方案不一定能够很好的利用现在的硬件性能发挥到极致</li>
+<li>使用全异步架构，把CPU利用到极致</li>
+</ul>
+</li>
+<li>向量化计算</li>
+</ul>
+<p>具体架构就略了，目前还在开发迭代中，后期在看。</p>
+<p>整体get到的点可能就是：在未来的某一天磁盘IO不再是性能瓶颈，它可能比CPU处理更快，到时候现在已有的操作系统可能就需要重新设计。</p>
+<p>注：</p>
+<p>对相关内容感兴趣的可以下载<a href="https://ppt.geekbang.org/list/qconbj2019?from=groupmessage&amp;isappinstalled=0" target="_blank" rel="noopener">各分享PPT</a></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/">大数据平台架构</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9E%B6%E6%9E%84/" rel="tag">架构</a></li></ul>
+
+            
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/03/20/2019032001-%E5%9F%BA%E4%BA%8ESentry%E5%92%8CHue%E5%AF%B9%E6%95%B0%E4%BB%93%E8%A1%A8%E5%81%9A%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">基于Sentry和Hue对数仓表做权限管理</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BF%AB%E6%89%8B%E4%B8%87%E4%BA%BF%E7%BA%A7%E5%88%ABKafka%E9%9B%86%E7%BE%A4%E5%BA%94%E7%94%A8%E5%AE%9E%E8%B7%B5%E4%B8%8E%E6%8A%80%E6%9C%AF%E6%BC%94%E8%BF%9B"><span class="nav-number">1.</span> <span class="nav-text">1. 快手万亿级别Kafka集群应用实践与技术演进</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.1.</span> <span class="nav-text">应用实践</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E6%BC%94%E8%BF%9B"><span class="nav-number">1.2.</span> <span class="nav-text">技术演进</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E4%B8%80%EF%BC%9Akafka%E9%9B%86%E7%BE%A4%E5%B9%B3%E6%BB%91%E6%89%A9%E5%AE%B9%E4%BC%98%E5%8C%96%EF%BC%8C%E8%A7%A3%E5%86%B3%E4%BA%86%E6%89%A9%E5%AE%B9%E8%8A%82%E7%82%B9%E6%97%B6%E5%AF%BC%E8%87%B4kafka%E9%9B%86%E7%BE%A4%E7%89%A9%E7%90%86%E8%B5%84%E6%BA%90%E5%A4%A7%E9%87%8F%E6%B6%88%E8%80%97%EF%BC%8C%E5%BD%B1%E5%93%8Dproducer%E5%86%99%E5%85%A5"><span class="nav-number">1.2.1.</span> <span class="nav-text">优化一：kafka集群平滑扩容优化，解决了扩容节点时导致kafka集群物理资源大量消耗，影响producer写入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E4%BA%8C%EF%BC%9AMirror%E9%9B%86%E7%BE%A4%E5%8C%96%E5%BB%BA%E8%AE%BE%EF%BC%8C%E6%91%92%E5%BC%83%E4%BA%86Apache-Kafka%E7%9A%84Mirrormaker%EF%BC%8C%E5%9F%BA%E4%BA%8EuReplicator%E5%81%9A%E4%BA%86%E6%94%B9%E8%BF%9B"><span class="nav-number">1.2.2.</span> <span class="nav-text">优化二：Mirror集群化建设，摒弃了Apache Kafka的Mirrormaker，基于uReplicator做了改进</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E4%B8%89%EF%BC%9A%E8%B5%84%E6%BA%90%E9%9A%94%E7%A6%BB%EF%BC%8C%E5%B0%86%E4%B8%8D%E5%90%8C%E4%B8%9A%E5%8A%A1%E7%BA%BF%E7%9A%84topic%E8%BF%9B%E8%A1%8C%E7%89%A9%E7%90%86%E9%9A%94%E7%A6%BB%EF%BC%8C%E4%BF%9D%E8%AF%81%E4%BA%92%E4%B8%8D%E5%BD%B1%E5%93%8D"><span class="nav-number">1.2.3.</span> <span class="nav-text">优化三：资源隔离，将不同业务线的topic进行物理隔离，保证互不影响</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E5%9B%9B%EF%BC%9A%E5%AF%B9PageCache%E7%9A%84%E6%94%B9%E9%80%A0%EF%BC%8C%E9%81%BF%E5%85%8DConsumer%E7%9A%84lag%E8%AF%BB%E5%92%8CFollower%E8%BF%9B%E8%A1%8Creplica%E6%97%B6%E5%8F%AF%E8%83%BD%E4%BA%A7%E7%94%9F%E7%9A%84PageCache%E6%B1%A1%E6%9F%93"><span class="nav-number">1.2.4.</span> <span class="nav-text">优化四：对PageCache的改造，避免Consumer的lag读和Follower进行replica时可能产生的PageCache污染</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E4%BA%94%EF%BC%9A%E6%B6%88%E8%B4%B9%E6%99%BA%E8%83%BD%E9%99%90%E9%80%9F%EF%BC%8C%E8%A7%A3%E5%86%B3%E4%BA%86%E6%9F%90%E4%B8%AAConsumer-lag%E5%BB%B6%E8%BF%9F%E5%90%8E%E8%AF%BB%E7%9B%98%E5%AF%BC%E8%87%B4%E7%9A%84producer%E5%86%99%E5%85%A5%E5%8F%97%E9%98%BB%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.2.5.</span> <span class="nav-text">优化五：消费智能限速，解决了某个Consumer lag延迟后读盘导致的producer写入受阻的问题</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.3.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%BB%B4%E6%BB%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%A0%94%E5%8F%91%E5%B9%B3%E5%8F%B0%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="nav-number">2.</span> <span class="nav-text">2. 滴滴大数据研发平台最佳实践</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E5%B7%A5%E4%BD%9C"><span class="nav-number">2.2.</span> <span class="nav-text">主要工作</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E4%B8%80%EF%BC%9A%E5%BC%80%E5%8F%91%E4%B8%8E%E7%94%9F%E4%BA%A7%E9%9A%94%E7%A6%BB"><span class="nav-number">2.2.1.</span> <span class="nav-text">工作一：开发与生产隔离</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E4%BA%8C%EF%BC%9A%E7%BB%9F%E4%B8%80%E7%9A%84%E4%BB%BB%E5%8A%A1%E6%89%A7%E8%A1%8C%E5%B9%B3%E5%8F%B0"><span class="nav-number">2.2.2.</span> <span class="nav-text">工作二：统一的任务执行平台</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E4%B8%89%EF%BC%9A%E5%AE%9E%E6%97%B6%E8%A1%A8%E5%85%83%E6%95%B0%E6%8D%AE%E5%8C%96"><span class="nav-number">2.2.3.</span> <span class="nav-text">工作三：实时表元数据化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E5%9B%9B%EF%BC%9A%E5%9F%BA%E4%BA%8E%E5%88%97%E8%BF%9B%E8%A1%8C%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86"><span class="nav-number">2.2.4.</span> <span class="nav-text">工作四：基于列进行权限管理</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-number">2.3.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%8B%8F%E5%AE%81OLAP%E5%BC%95%E6%93%8E%E5%8F%91%E5%B1%95%E4%B9%8B%E8%B7%AF"><span class="nav-number">3.</span> <span class="nav-text">3. 苏宁OLAP引擎发展之路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-ClickHouse%E5%9C%A8%E5%A4%B4%E6%9D%A1%E7%9A%84%E6%8A%80%E6%9C%AF%E6%BC%94%E8%BF%9B"><span class="nav-number">4.</span> <span class="nav-text">4. ClickHouse在头条的技术演进</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B-1"><span class="nav-number">4.0.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BA%94%E7%94%A8"><span class="nav-number">4.0.2.</span> <span class="nav-text">应用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-2"><span class="nav-number">4.0.3.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BE%8E%E5%9B%A2%E7%82%B9%E8%AF%84%E5%B8%B8%E6%80%81%E3%80%81%E5%BC%82%E5%9C%B0%E3%80%81%E5%A4%9A%E6%9C%BA%E6%88%BF%E3%80%81%E5%8D%95%E9%9B%86%E7%BE%A4Hadoop%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5"><span class="nav-number">5.</span> <span class="nav-text">5. 美团点评常态、异地、多机房、单集群Hadoop架构实践</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.1.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%A4%9A%E6%9C%BA%E6%88%BFHadoop%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86"><span class="nav-number">5.1.1.</span> <span class="nav-text">第一步：多机房Hadoop资源管理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E5%A4%9A%E6%9C%BA%E6%88%BFHadoop%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86"><span class="nav-number">5.1.2.</span> <span class="nav-text">第二步：多机房Hadoop资源管理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9AHDFS%E6%9C%BA%E6%88%BF%E5%AE%B9%E9%94%99"><span class="nav-number">5.1.3.</span> <span class="nav-text">第三步：HDFS机房容错</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-3"><span class="nav-number">5.2.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E6%96%B0%E4%B8%80%E4%BB%A3%E4%BA%A4%E4%BA%92%E5%BC%8F%E5%88%86%E6%9E%90%E5%BC%95%E6%93%8E-Hologres"><span class="nav-number">6.</span> <span class="nav-text">6. 阿里巴巴新一代交互式分析引擎-Hologres</span></a></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+      <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2020 GuoYL&#39;s Notes All Rights Reserved.
+          
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hiero" target="_blank">hiero</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var contentdiv = document.getElementById("content");
+
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+</script>
+
+<!-- Custome JS -->
+
+<script src="/js/my.js"></script>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>

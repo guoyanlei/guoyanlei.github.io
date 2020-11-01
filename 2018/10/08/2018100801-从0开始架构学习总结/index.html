@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  
+  <title>从0开始架构学习总结 | GuoYL&#39;s Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="架构" />
+  
+  
+  
+  
+  <meta name="description" content="架构基础架构概念 软件架构指软件系统的顶层结构。   子系统：子系统也是由一群有关联的个体所组成的系统，多半会是更大系统中一部分 框架：关注的是“规范”（Framework），如Spring MVC框架 架构：关注的是“结构”（Architecture） 模块：逻辑的角度来拆分系统后，得到的单元就是“模块”，主要目的是职责分离 组件：从物理的角度来拆分系统后，得到的单元就是“组件”，主要目的是单元">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从0开始架构学习总结">
+<meta property="og:url" content="http://guoyanlei.top/2018/10/08/2018100801-%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="GuoYL&#39;s Notes">
+<meta property="og:description" content="架构基础架构概念 软件架构指软件系统的顶层结构。   子系统：子系统也是由一群有关联的个体所组成的系统，多半会是更大系统中一部分 框架：关注的是“规范”（Framework），如Spring MVC框架 架构：关注的是“结构”（Architecture） 模块：逻辑的角度来拆分系统后，得到的单元就是“模块”，主要目的是职责分离 组件：从物理的角度来拆分系统后，得到的单元就是“组件”，主要目的是单元">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://guoyanlei.top/img/architecture/architecture_1.png">
+<meta property="og:image" content="http://guoyanlei.top/img/architecture/architecture_2.png">
+<meta property="og:image" content="http://guoyanlei.top/img/architecture/architecture_3.png">
+<meta property="og:image" content="http://guoyanlei.top/img/architecture/architecture_4.png">
+<meta property="og:image" content="http://guoyanlei.top/img/architecture/architecture_5.png">
+<meta property="article:published_time" content="2018-10-08T07:30:00.000Z">
+<meta property="article:modified_time" content="2018-11-19T04:00:39.260Z">
+<meta property="article:author" content="Guo Yanlei">
+<meta property="article:tag" content="架构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://guoyanlei.top/img/architecture/architecture_1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="GuoYL&#39;s Notes" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/hiero.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+  <!-- Custom CSS -->
+  
+<link rel="stylesheet" href="/css/my.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<script>
+var themeMenus = {};
+
+  themeMenus["/"] = "首页"; 
+
+  themeMenus["/archives"] = "归档"; 
+
+  themeMenus["/categories"] = "分类"; 
+
+  themeMenus["/tags"] = "标签"; 
+
+  themeMenus["/about"] = "关于"; 
+
+</script>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  <header id="allheader" class="site-header" role="banner">
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="GuoYL&#39;s Notes" rel="home"> GuoYL&#39;s Notes </a>
+            
+          </h1>
+
+          
+            <div class="site-description">大志非才不就，大才非学不成</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+            <div class="clearfix sf-menu">
+
+              <ul id="main-nav" class="nmenu sf-js-enabled">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+
+      </div>
+  </div>
+</header>
+
+
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-2018100801-从0开始架构学习总结" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      从0开始架构学习总结
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	Posted on <a href="/2018/10/08/2018100801-%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" class="article-date">
+	  <time datetime="2018-10-08T07:30:00.000Z" itemprop="datePublished">十月 8, 2018</time>
+	</a>
+
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="架构基础"><a href="#架构基础" class="headerlink" title="架构基础"></a>架构基础</h2><h3 id="架构概念"><a href="#架构概念" class="headerlink" title="架构概念"></a>架构概念</h3><blockquote>
+<p>软件架构指软件系统的顶层结构。</p>
+</blockquote>
+<ul>
+<li>子系统：子系统也是由一群有关联的个体所组成的系统，多半会是更大系统中一部分</li>
+<li>框架：关注的是“规范”（Framework），如Spring MVC框架</li>
+<li>架构：关注的是“结构”（Architecture）</li>
+<li>模块：逻辑的角度来拆分系统后，得到的单元就是“模块”，主要目的是职责分离</li>
+<li>组件：从物理的角度来拆分系统后，得到的单元就是“组件”，主要目的是单元复用</li>
+</ul>
+<p>一句话总结：架构是顶层设计；框架是面向编程或配置的半成品；组件是从技术维度上的复用；模块是从业务维度上职责的划分；系统是相互协同可运行的实体。</p>
+<p><img src="/img/architecture/architecture_1.png" alt="architecture_1"></p>
+<a id="more"></a>
+<h3 id="架构设计的目的"><a href="#架构设计的目的" class="headerlink" title="架构设计的目的"></a>架构设计的目的</h3><blockquote>
+<p>架构设计的主要目的是为了解决软件系统复杂度带来的问题。</p>
+</blockquote>
+<p>一句话总结：架构即(重要)决策，是在一个有约束的盒子里去求解或接近最合适的解。这个有约束的盒子是团队经验、成本、资源、进度、业务所处阶段等所编织、掺杂在一起的综合体(人，财，物，时间，事情等)。架构无优劣，但是存在恰当的架构用在合适的软件系统中，而这些就是决策的结果。</p>
+<h3 id="软件系统复杂度的来源"><a href="#软件系统复杂度的来源" class="headerlink" title="软件系统复杂度的来源"></a>软件系统复杂度的来源</h3><h4 id="1-高性能"><a href="#1-高性能" class="headerlink" title="1. 高性能"></a>1. 高性能</h4><blockquote>
+<p>单台计算机内部为了高性能带来的复杂度（垂直维度）</p>
+<p>多台计算机集群为了高性能带来的复杂度（水平维度）</p>
+</blockquote>
+<p>垂直维度方案比较适合业务阶段早期和成本可接受的阶段，该方案是提升性能最简单直接的方式，但是受成本与硬件能力天花板的限制。</p>
+<p>水平维度方案所带来的好处要在业务发展的后期才能体现出来。起初，该方案会花费更多的硬件成本，另外一方面对技术团队也提出了更高的要求；但是，没有垂直方案的天花板问题。一旦达到一定的业务阶段，水平维度是技术发展的必由之路。</p>
+<h4 id="2-高可用"><a href="#2-高可用" class="headerlink" title="2. 高可用"></a>2. 高可用</h4><blockquote>
+<p>系统无中断地执行其功能的能力</p>
+</blockquote>
+<ul>
+<li>计算高可用（任务分配器，分配器于业务服务器的交互，分配算法等）</li>
+<li>存储高可用（CAP定理：存储高可用不可能同时满足“一致性、可用性、分区容错性”，最多满足其中两个）</li>
+</ul>
+<p>实现高可用的本质：“冗余”（高性能增加机器目的在于“扩展”处理性能；高可用增加机器目的在于“冗余”处理单元）</p>
+<p>高可用的解决方法不是解决，而是减少或者规避，而规避某个问题的时候，一般都会引发另一个问题，只是这个问题比之前的小，高可用的设计过程其实也是一个取舍的过程。</p>
+<h4 id="3-可扩展"><a href="#3-可扩展" class="headerlink" title="3. 可扩展"></a>3. 可扩展</h4><blockquote>
+<p>系统为了应对将来需求变化而提供的一种扩展能力，当有新的需求出现时，系统不需要或者仅需要少量修改就可以支持，无须整个系统重构或者重建。</p>
+</blockquote>
+<p>设计具备良好可扩展性的系统：<br>1）从业务维度。对业务深入理解，对可预计的业务变化进行预测。<br>2）从技术维度。利用扩展性好的技术，实现对变化的封装。</p>
+<h4 id="4-低成本"><a href="#4-低成本" class="headerlink" title="4. 低成本"></a>4. 低成本</h4><blockquote>
+<p>低成本本质上是与高性能和高可用冲突的，当无法设计出满足成本要求的方案，就只能协调并调整成本目标</p>
+</blockquote>
+<p>一般通过创新达到低成本目标：</p>
+<ul>
+<li>引入新技术</li>
+<li>开创一个全新技术领域</li>
+</ul>
+<h4 id="5-安全"><a href="#5-安全" class="headerlink" title="5. 安全"></a>5. 安全</h4><blockquote>
+<p>功能安全（防小偷）：减少系统潜在的缺陷，阻止黑客破坏行为</p>
+<p>架构安全（防强盗）：保护系统不受恶意访问和攻击，保护系统的重要数据不被窃取</p>
+</blockquote>
+<h4 id="6-规模"><a href="#6-规模" class="headerlink" title="6. 规模"></a>6. 规模</h4><blockquote>
+<p>规模带来复杂度的主要原因就是“量变引起质变”，当数量超过一定的阈值后，复杂度会发生质的变化</p>
+</blockquote>
+<p>规模问题需要与高性能、高可用、高扩展、高伸缩性统一考虑。常采用“分而治之，各个击破”的方法策略。</p>
+<h3 id="架构设计三原则"><a href="#架构设计三原则" class="headerlink" title="架构设计三原则"></a>架构设计三原则</h3><h4 id="合适原则"><a href="#合适原则" class="headerlink" title="合适原则"></a>合适原则</h4><blockquote>
+<p>合适优于业界领先</p>
+</blockquote>
+<h4 id="简单原则"><a href="#简单原则" class="headerlink" title="简单原则"></a>简单原则</h4><blockquote>
+<p>简单优于复杂</p>
+</blockquote>
+<h4 id="演化原则"><a href="#演化原则" class="headerlink" title="演化原则"></a>演化原则</h4><blockquote>
+<p>演化优于一步到位</p>
+</blockquote>
+<h3 id="架构设计流程"><a href="#架构设计流程" class="headerlink" title="架构设计流程"></a>架构设计流程</h3><h4 id="第一步：识别复杂度"><a href="#第一步：识别复杂度" class="headerlink" title="第一步：识别复杂度"></a>第一步：识别复杂度</h4><blockquote>
+<p>将主要的复杂度问题列出来，然后根据业务、技术、团队等综合情况进行排序，优先解决当前面临的最主要的复杂度问题。</p>
+</blockquote>
+<p>具体做法：</p>
+<ul>
+<li>构建复杂度的来源清单——高性能、可用性、扩展性、安全、低成本、规模等。</li>
+<li>结合需求、技术、团队、资源等对上述复杂度逐一分析是否需要？是否关键？</li>
+<li>按照上述的分析结论，得到复杂度按照优先级的排序清单，越是排在前面的复杂度，就越关键，就越优先解决。</li>
+</ul>
+<h4 id="第二步：设计备选方案"><a href="#第二步：设计备选方案" class="headerlink" title="第二步：设计备选方案"></a>第二步：设计备选方案</h4><ul>
+<li>备选方案不要过于详细。备选阶段解决的是技术选型问题，而不是技术细节。</li>
+<li>备选方案的数量以 3~5个为最佳。</li>
+<li>备选方案的技术差异要明显。</li>
+<li>备选方案不要只局限于已经熟悉的技术。</li>
+</ul>
+<h4 id="第三步：评估和选择备选方案"><a href="#第三步：评估和选择备选方案" class="headerlink" title="第三步：评估和选择备选方案"></a>第三步：评估和选择备选方案</h4><blockquote>
+<p>列出我们需要关注的质量属性点，然后分别从这些质量属性的维度去评估每个方案，再综合挑选适合当时情况的最优方案。</p>
+</blockquote>
+<p>质量属性：性能、可用性、硬件成本、项目投入、复杂度、安全性、可扩展性等</p>
+<h4 id="第四步：详细方案设计"><a href="#第四步：详细方案设计" class="headerlink" title="第四步：详细方案设计"></a>第四步：详细方案设计</h4><blockquote>
+<p>详细方案设计是将方案涉及的关键技术细节给确定下来</p>
+</blockquote>
+<h2 id="高性能架构模式"><a href="#高性能架构模式" class="headerlink" title="高性能架构模式"></a>高性能架构模式</h2><p><img src="/img/architecture/architecture_2.png" alt="architecture_2"></p>
+<h3 id="高性能数据库集群"><a href="#高性能数据库集群" class="headerlink" title="高性能数据库集群"></a>高性能数据库集群</h3><h4 id="读写分离"><a href="#读写分离" class="headerlink" title="读写分离"></a>读写分离</h4><blockquote>
+<p>基本原理是将数据库读写操作分散到不同的节点上。</p>
+</blockquote>
+<ul>
+<li>主从：“从机”是需要提供读数据的功能的</li>
+<li>主备：一般被认为仅仅提供备份功能，不提供访问功能</li>
+</ul>
+<p>主从基本实现：</p>
+<ul>
+<li>数据库服务器搭建主从集群，一主一从、一主多从都可以</li>
+<li>数据库主机负责读写操作，从机只负责读操作。</li>
+<li>数据库主机通过复制将数据同步到从机，每台数据库服务器都存储了所有的业务数据。</li>
+<li>业务服务器将写操作发给数据库主机，将读操作发给数据库从机。</li>
+</ul>
+<p>需解决的问题：</p>
+<ul>
+<li>复制延迟：数据同步延迟<ul>
+<li>写操作后的读操作指定发给数据库主服务器</li>
+<li>读从机失败后再读一次主机</li>
+<li>关键业务读写操作全部指向主机，非关键业务采用读写分离</li>
+</ul>
+</li>
+<li>分配机制：将读写区分开<ul>
+<li>程序代码封装（在代码中抽象一个数据访问层，Hibernate）</li>
+<li>中间件封装（独立一套系统出来，实现读写操作分离和数据库服务器连接的管理，MySQL Router）</li>
+</ul>
+</li>
+</ul>
+<p>总结：并不是说一有性能问题就上读写分离，而是应该先优化，例如优化慢查询，调整不合理的业务逻辑，引入缓存等，只有确定系统没有优化空间后，才考虑读写分离或者集群。</p>
+<h4 id="分库分表"><a href="#分库分表" class="headerlink" title="分库分表"></a>分库分表</h4><h5 id="业务分库"><a href="#业务分库" class="headerlink" title="业务分库"></a>业务分库</h5><blockquote>
+<p>业务分库指的是按照业务模块将数据分散到不同的数据库服务器。</p>
+</blockquote>
+<p>需注意的问题：</p>
+<ul>
+<li>JOIN操作问题</li>
+<li>事务问题</li>
+<li>成本问题</li>
+</ul>
+<h5 id="分表"><a href="#分表" class="headerlink" title="分表"></a>分表</h5><blockquote>
+<p>同一业务的单表数据进行拆分</p>
+</blockquote>
+<ul>
+<li>垂直分表：拆分字段到不同的表</li>
+<li>水平分表：拆分记录到不同的表</li>
+</ul>
+<p>水平分表的路由问题：</p>
+<ul>
+<li>范围路由：选取有序的数据列（例如，整形、时间戳等）作为路由的条件，不同分段分散到不同的数据库表中。</li>
+<li>Hash路由：选取某个列（或者某几个列组合也可以）的值进行Hash运算，然后根据 Hash 结果分散到不同的数据库表中。</li>
+<li>配置路由：配置路由就是路由表，用一张独立的表来记录路由信息。</li>
+</ul>
+<h4 id="高性能NoSQL"><a href="#高性能NoSQL" class="headerlink" title="高性能NoSQL"></a>高性能NoSQL</h4><p>常见的NoSQL方案分为4类。</p>
+<ul>
+<li>K-V 存储：解决关系数据库无法存储数据结构的问题，以Redis为代表<ul>
+<li>Redis 的 Value 是具体的数据结构，包括string、hash、list、set、sorted set、bitmap 和 hyperloglog，常被称为数据结构服务器</li>
+<li>Redis 的事务只能保证隔离性和一致性（I 和 C），无法保证原子性和持久性（A 和 D）</li>
+</ul>
+</li>
+<li>文档数据库：解决关系数据库强schema约束的问题，以MongoDB为代表<ul>
+<li>新增字段简单，历史数据不回出错</li>
+<li>很容易存储复杂数据</li>
+<li>代价是不支持事物、无法实现关系数据库的 join 操作</li>
+</ul>
+</li>
+<li>列式数据库：解决关系数据库大数据场景下的I/O问题，以HBase为代表<ul>
+<li>读取表中某些列时，只需要把需要的列读取到内存中（节省I/O）</li>
+<li>列式存储还具备更高的存储压缩比，能够节省更多的存储空间</li>
+<li>需要频繁地更新多个列时，磁盘是随机写操作，效率不高</li>
+</ul>
+</li>
+<li>全文搜索引擎：解决关系数据库的全文搜索性能问题，以Elasticsearch为代表<ul>
+<li>技术原理被称为“倒排索引”，建立单词到文档的索引</li>
+<li>全文搜索引擎的索引对象是单词和文档，而关系数据库的索引对象是键和行</li>
+</ul>
+</li>
+</ul>
+<h4 id="高性能缓存"><a href="#高性能缓存" class="headerlink" title="高性能缓存"></a>高性能缓存</h4><blockquote>
+<p>缓存就是为了弥补存储系统在复杂业务场景（经过复杂运算过的数据、读多写少等）下的不足，其基本原理是将可能重复使用的数据放到内存中，一次生成、多次使用，避免每次使用都去访问存储系统。</p>
+</blockquote>
+<p>缓存架构的设计要点</p>
+<h5 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h5><blockquote>
+<p>缓存没有发挥作用，业务系统虽然去缓存查询数据，但缓存中没有数据，业务系统需要再次去存储系统查询数据。</p>
+</blockquote>
+<h5 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h5><blockquote>
+<p>当缓存失效（过期）后引起系统性能急剧下降的情况。由于旧的缓存已经被清除，新的缓存还未生成，并且处理这些请求的线程都不知道另外有一个线程正在生成缓存，因此所有的请求都会去重新生成缓存，都会去访问存储系统，从而对存储系统造成巨大的性能压力。这些压力又会拖慢整个系统。</p>
+</blockquote>
+<p>解放方法：</p>
+<ul>
+<li>更新锁：对缓存更新操作进行加锁保护，保证只有一个线程能够进行缓存更新，未能获取更新锁的线程要么等待锁释放后重新读取缓存，要么就返回空值或默认值。</li>
+<li>后台更新：后台线程来更新缓存，而不是由业务线程来更新缓存，缓存本身的有效期设置为永久，后台线程定时更新缓存。</li>
+</ul>
+<h5 id="缓存热点"><a href="#缓存热点" class="headerlink" title="缓存热点"></a>缓存热点</h5><blockquote>
+<p>如果大部分甚至所有的业务请求都命中同一份缓存数据，则这份数据所在的缓存服务器的压力也很大。</p>
+</blockquote>
+<p>解决方法：复制多份缓存副本，将请求分散到多个缓存服务器上，减轻缓存热点导致的单台缓存服务器压力。（不同的缓存副本不要设置统一的过期时间，否则就会出现所有缓存副本同时生成同时失效的情况，从而引发缓存雪崩）</p>
+<h3 id="高性能服务器"><a href="#高性能服务器" class="headerlink" title="高性能服务器"></a>高性能服务器</h3><ul>
+<li>尽量提升单服务器的性能，将单服务器的性能发挥到极致。</li>
+<li>如果单服务器无法支撑性能，设计服务器集群方案。</li>
+</ul>
+<h4 id="单服务器的高性能"><a href="#单服务器的高性能" class="headerlink" title="单服务器的高性能"></a>单服务器的高性能</h4><blockquote>
+<p>单服务器高性能的关键之一就是设计服务器采取的 “并发模型”</p>
+</blockquote>
+<ul>
+<li>服务器如何处理连接：I/O 模型：阻塞、非阻塞、同步、异步</li>
+<li>服务器如何处理请求：进程模型：单进程、多进程、多线程</li>
+</ul>
+<p>单服务器高性能模式（PPC 和 TPC 模式）：</p>
+<ul>
+<li>PPC（Process Per Connection）：指每次有新的连接就新建一个 “进程” 去专门处理这个连接的请求</li>
+<li>prefork：系统在启动的时候就预先创建好进程，然后才开始接受用户的请求，省去fork进程操作</li>
+<li>TPC（Thread Per Connection）：指每次有新的连接就新建一个 “线程” 去专门处理这个连接的请求</li>
+<li>prethread：预先创建线程，然后才开始接受用户的请求，当有新的连接进来的时候，就可以省去创建线程的操作</li>
+</ul>
+<p>单服务器高性能模式（Reactor 和 Proactor 模式）：</p>
+<blockquote>
+<p>资源复用，即不再单独为每个连接创建进程，而是创建一个进程池，将连接分配给进程，一个进程可以处理多个连接的业务.</p>
+</blockquote>
+<p>IO操作分两个阶段【去饭店点餐排队】：</p>
+<ul>
+<li><ol>
+<li>等待数据准备好(读到内核缓存) 【准备菜品】</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>将数据从内核缓存读到用户空间(进程空间) 【端走吃到肚里】</li>
+</ol>
+</li>
+</ul>
+<p>一般来说1花费的时间远远大于2。 </p>
+<ul>
+<li>同步阻塞IO：1上阻塞2上也阻塞【付完钱在收银台等着，菜好之后取走离开】</li>
+<li>同步非阻塞IO：1上非阻塞2上阻塞（Reactor模型）【付完钱领号，等待叫号，自己来取】</li>
+<li>异步非阻塞IO：1上非阻塞2上非阻塞是（Proactor模型）【付完钱领号，回到座位干别的，菜好后服务员把菜端来】</li>
+</ul>
+<h4 id="服务器集群的高性能"><a href="#服务器集群的高性能" class="headerlink" title="服务器集群的高性能"></a>服务器集群的高性能</h4><blockquote>
+<p>高性能集群的复杂性：需要一个任务分配器（负载均衡），以及任务分配算法</p>
+</blockquote>
+<h5 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h5><p>负载均衡的分类：</p>
+<ul>
+<li>DNS负载均衡：实现地理级别的均衡（简单、成本低）</li>
+<li>硬件负载均衡：用于负载均衡的基础网络设备（价格昂贵、扩展能力差）</li>
+<li>软件负载均衡：常见的Nginx（网络7层负载均衡）和 LVS（4层负载均衡）</li>
+</ul>
+<p>DNS 负载均衡用于实现地理级别的负载均衡；硬件负载均衡用于实现集群级别的负载均衡；软件负载均衡用于实现机器级别的负载均衡。</p>
+<h5 id="任务分配算法"><a href="#任务分配算法" class="headerlink" title="任务分配算法"></a>任务分配算法</h5><ul>
+<li>轮询：按照顺序轮流分配到服务器上</li>
+<li>加权轮询：根据服务器权重进行任务分配</li>
+<li>负载最低优先：将任务分配给当前负载最低的服务器（站在服务器的角度）</li>
+<li>性能最优类：优先将任务分配给处理速度最快的服务器（站在客户端的角度）</li>
+<li>Hash类：根据任务中的某些关键信息进行 Hash 运算，将相同 Hash 值的请求分配到同一台服务器上</li>
+</ul>
+<h2 id="高可用架构模式"><a href="#高可用架构模式" class="headerlink" title="高可用架构模式"></a>高可用架构模式</h2><p><img src="/img/architecture/architecture_3.png" alt="architecture_3"></p>
+<h3 id="分布式系统架构CAP定理"><a href="#分布式系统架构CAP定理" class="headerlink" title="分布式系统架构CAP定理"></a>分布式系统架构CAP定理</h3><blockquote>
+<p>在一个分布式系统（指互相连接并共享数据的节点的集合）中，当涉及读写操作时，只能保证一致性（Consistence）、可用性（Availability）、分区容错性（Partition Tolerance）三者中的两个，另外一个必须被牺牲。</p>
+</blockquote>
+<ul>
+<li>一致性（C）：对某个指定的客户端来说，读操作保证能够返回最新的写操作结果</li>
+<li>可用性（A）：非故障的节点在合理的时间内返回合理的响应（不是错误和超时的响应）</li>
+<li>分区容错型（P）：当出现网络分区后，系统能够继续“履行职责”。</li>
+</ul>
+<blockquote>
+<p>设计分布式系统架构时必须选择 P（分区容忍），因为网络本身无法做到 100%可靠，有可能出故障，所以分区是一个必然的现象。</p>
+</blockquote>
+<ul>
+<li>CP：发生分区现象后，有问题的节点不能同步数据，为了保证一致性（C），请求数据时只能返回Error，就不能满足可用性（A）</li>
+<li>AP：发生分区现象后，有问题的节点不能同步数据，为了保证可用性（A），请求数据时只能返回旧数据，就不能满足一致性（C）</li>
+</ul>
+<p>注意：</p>
+<ul>
+<li>CAP 关注的粒度是数据，而不是整个系统。</li>
+<li>CAP 是忽略网络延迟的（数据能够瞬间复制到所有节点）</li>
+<li>既要考虑分区发生时选择 CP 还是 AP，也要考虑分区没有发生时如何保证 CA。</li>
+<li>放弃并不等于什么都不做，需要为分区恢复后做准备。</li>
+</ul>
+<p>BASE理论：即使无法做到强一致性（CAP），但应用可以采用适合的方式达到最终一致性。</p>
+<ul>
+<li>基本可用（Basically Available）：分布式系统在出现故障时，允许损失部分可用性，即保证核心可用</li>
+<li>软状态（Soft State）：允许系统存在中间状态，而该中间状态不会影响系统整体可用性</li>
+<li>最终一致性（Eventual Consistency）：系统中的所有数据副本经过一定时间后，最终能够达到一致的状态</li>
+</ul>
+<p>ACID：数据库管理系统为了保证 “事务” 的正确性而提出来的一个理论。</p>
+<ul>
+<li>Atomicity（原子性）：要么全部完成，要么全部不完成</li>
+<li>Consistency（一致性）：开始和结束后数据库完整型没有破坏</li>
+<li>Isolation（隔离性）：多个并发事务同时对数据进行读写和修改的能力</li>
+<li>Durability（持久性）：事务处理结束后，对数据的修改就是永久的</li>
+</ul>
+<h3 id="高可用存储架构"><a href="#高可用存储架构" class="headerlink" title="高可用存储架构"></a>高可用存储架构</h3><h4 id="双机高可用架构（隐含的假设：主机能够存储所有数据）"><a href="#双机高可用架构（隐含的假设：主机能够存储所有数据）" class="headerlink" title="双机高可用架构（隐含的假设：主机能够存储所有数据）"></a>双机高可用架构（隐含的假设：主机能够存储所有数据）</h4><ul>
+<li>主备复制（备机仅仅只为备份，并没有提供读写操作，硬件成本上有浪费）</li>
+<li>主从复制（主机负责读写操作，从机只负责读操作，不负责写操作）</li>
+<li>主备/主从切换（在原有方案的基础上增加“切换”功能，即系统自动决定主机角色，并完成角色切换）</li>
+<li>主主复制（两台机器都是主机，互相将数据复制给对方，任意连接一台进行读写操作）</li>
+</ul>
+<p>主备切换架构：</p>
+<ul>
+<li>互连式：主备机直接建立状态传递的渠道</li>
+<li>中介式：主备机之间不直接连接，而都去连接中介，并且通过中介来传递状态</li>
+<li>模拟式：主备机之间并不传递任何状态数据，而是备机模拟成一个客户端，向主机发起模拟的读写操作，根据读写操作的响应情况来判断主机的状态</li>
+</ul>
+<h4 id="集群式高可用存储架构"><a href="#集群式高可用存储架构" class="headerlink" title="集群式高可用存储架构"></a>集群式高可用存储架构</h4><h5 id="数据集群"><a href="#数据集群" class="headerlink" title="数据集群"></a>数据集群</h5><ul>
+<li>数据集中集群（数据都只能往主机中写，而读操作可以参考主备、主从架构进行灵活多变，如zookeeper集群-ZAB算法）</li>
+<li>数据分散集群（每台服务器都会负责存储一部分数据，每台服务器又会备份一部分数据，如Hadoop集群）</li>
+</ul>
+<h5 id="数据分区"><a href="#数据分区" class="headerlink" title="数据分区"></a>数据分区</h5><ul>
+<li>集中式：所有的分区都将数据备份到备份中心</li>
+<li>互备式：每个分区备份另外一个分区的数据</li>
+<li>独立式：每个分区自己有独立的备份中心</li>
+</ul>
+<h3 id="计算高可用"><a href="#计算高可用" class="headerlink" title="计算高可用"></a>计算高可用</h3><ul>
+<li>主备：主机执行所有计算任务，当主机故障时，任务分配器不会自动将计算任务发送给备机</li>
+<li>主从：任务分配器需要将任务进行分类，确定哪些任务可以发送给主机执行，哪些任务可以发送给备机执行</li>
+<li>集群<ul>
+<li>对称集群：负载均衡集群（集群中每个服务器的角色都是一样的，都可以执行所有任务）</li>
+<li>非对称集群：集群中的服务器分为多个不同的角色，不同的角色执行不同的任务</li>
+</ul>
+</li>
+</ul>
+<h3 id="业务高可用"><a href="#业务高可用" class="headerlink" title="业务高可用"></a>业务高可用</h3><p>存储高可用和计算高可用都是为了解决部分服务器故障的场景下，如何保证系统能够继续提供服务。在一些极端场景下，有可能所有服务器都出现故障，此时就需要设计异地多活架构。</p>
+<blockquote>
+<p>异地：指地理位置上不同的地方</p>
+<p>多活：指不同地理位置上的系统都能够提供业务服务</p>
+</blockquote>
+<ul>
+<li>同城异区（同一个城市不同区的多个机房）</li>
+<li>跨城异地（不同城市的多个机房）</li>
+<li>跨国异地（不同国家的多个机房）</li>
+</ul>
+<p>四大设计技巧:</p>
+<ul>
+<li>保证 “核心” 业务的异地多活</li>
+<li>保证核心数据 “最终” 一致性</li>
+<li>采用多种手段同步数据</li>
+<li>只保证绝大部分用户的异地多活</li>
+</ul>
+<blockquote>
+<p>采用多种手段，保证绝大部分用户的核心业务异地多活</p>
+</blockquote>
+<p>四步：</p>
+<ul>
+<li>业务分级（挑选出核心的业务，只为核心业务设计异地多活）</li>
+<li>数据分类（识别所有的数据及数据特征）</li>
+<li>数据同步</li>
+<li>异常处理</li>
+</ul>
+<h4 id="接口级的故障"><a href="#接口级的故障" class="headerlink" title="接口级的故障"></a>接口级的故障</h4><p>接口级故障表现为：系统并没有宕机，网络也没有中断，但业务却出现问题了（业务响应缓慢、大量访问超时、大量访问出现异常）</p>
+<blockquote>
+<p>优先保证核心业务和优先保证绝大部分用户</p>
+</blockquote>
+<p>解决方案：</p>
+<ul>
+<li>降级：（应对系统自身的故障）将某些业务或者接口的功能降低，可以是只提供部分功能，也可以是完全停掉所有功能<ul>
+<li>系统后门降级</li>
+<li>独立降级系统</li>
+</ul>
+</li>
+<li>熔断：（应对依赖的外部系统故障的情况）壮士断腕，停掉外部依赖的调用</li>
+<li>限流：（直接拒绝用户）从系统功能优先级的角度考虑如何应对故障，只允许系统能够承受的访问量进来，超出系统访问能力的请求将被丢弃<ul>
+<li>基于请求限流</li>
+<li>基于资源限流</li>
+</ul>
+</li>
+<li>排队：（让用户等待一段时间）使用 Kafka 这类消息队列来缓存用户请求</li>
+</ul>
+<h2 id="可扩展架构模式"><a href="#可扩展架构模式" class="headerlink" title="可扩展架构模式"></a>可扩展架构模式</h2><p><img src="/img/architecture/architecture_4.png" alt="architecture_4"></p>
+<h3 id="可扩展的基本思想"><a href="#可扩展的基本思想" class="headerlink" title="可扩展的基本思想"></a>可扩展的基本思想</h3><blockquote>
+<p>总结为一个字：拆！</p>
+</blockquote>
+<p>流程 &gt; 服务 &gt; 功能</p>
+<ul>
+<li>面向流程拆分：将整个业务流程拆分为几个阶段，每个阶段作为一部分（得到分层架构）</li>
+<li>面向服务拆分：将系统提供的服务拆分，每个服务作为一部分（SOA、微服务）</li>
+<li>面向功能拆分：将系统提供的功能拆分，每个功能作为一部分（微内核架构）</li>
+</ul>
+<h3 id="分层架构"><a href="#分层架构" class="headerlink" title="分层架构"></a>分层架构</h3><blockquote>
+<p>本质在于隔离关注点，即每个层中的组件只会处理本层的逻辑。</p>
+</blockquote>
+<ul>
+<li>C/S 架构、B/S 架构（划分的对象是整个业务系统，划分的维度是用户交互）</li>
+<li>MVC 架构、MVP 架构（划分的对象是单个业务子系统，划分的维度是职责）</li>
+<li>逻辑分层架构（划分的对象可以是整个或单个业务子系统，划分的维度也是职责，逻辑分层架构中的层是自顶向下依赖的）</li>
+</ul>
+<h3 id="SOA架构（面向服务架构）"><a href="#SOA架构（面向服务架构）" class="headerlink" title="SOA架构（面向服务架构）"></a>SOA架构（面向服务架构）</h3><blockquote>
+<p>SOA 出现的背景是企业内部的系统重复建设且效率低下，SOA 解决了传统 IT 系统重复建设和扩展效率低的问题。</p>
+</blockquote>
+<ul>
+<li>SOA是集成的思想，是解决服务孤岛打通链条，是无奈之举。</li>
+<li>ESB集中化的管理带来了性能不佳，厚重等问题。也无法快速扩展。不适合互联网的业务特点</li>
+</ul>
+<h3 id="微服务架构"><a href="#微服务架构" class="headerlink" title="微服务架构"></a>微服务架构</h3><blockquote>
+<p>SOA 和微服务本质上是两种不同的架构设计理念，只是在“服务”这个点上有交集而已。</p>
+</blockquote>
+<ul>
+<li>微服务是 SOA 的实现方式（服务粒度比SOA细）</li>
+<li>微服务是去掉 ESB 后的 SOA（更为轻量级，例如HTTP RESTful）</li>
+<li>微服务是一种和 SOA 相似但本质上不同的架构理念（服务交付快，适合互联网）</li>
+</ul>
+<h4 id="微服务拆分方法（维度）："><a href="#微服务拆分方法（维度）：" class="headerlink" title="微服务拆分方法（维度）："></a>微服务拆分方法（维度）：</h4><ol>
+<li>基于业务逻辑拆分（系统中的业务模块按照职责范围识别出来，每个单独的业务模块拆分为一个独立的服务）</li>
+<li>基于可扩展拆分（将系统中的业务模块按照稳定性排序，将已经成熟和改动不大的服务拆分为稳定服务，将经常变化和迭代的服务拆分为变动服务）</li>
+<li>基于可靠性拆分（将系统中的业务模块按照优先级排序，将可靠性要求高的核心服务和可靠性要求低的非核心服务拆分开来，然后重点保证核心服务的高可用）</li>
+<li>基于性能拆分（将性能要求高或者性能压力大的模块拆分出来，避免性能压力大的服务影响其他服务）</li>
+</ol>
+<h4 id="微服务基础设施："><a href="#微服务基础设施：" class="headerlink" title="微服务基础设施："></a>微服务基础设施：</h4><ul>
+<li>自动化测试（通过自动化测试系统来完成绝大部分测试回归的工作）</li>
+<li>自动化部署（自动化部署的系统来完成大量的部署操作）</li>
+<li>配置中心（有的运行期配置需要动态修改并且所有节点即时生效，人工操作是无法做到的）</li>
+<li>接口框架（HTTP/REST 或者 RPC 方式）</li>
+<li>API网关（内部的微服务之间是互联互通的，相互之间的访问都是点对点的，需要一个统一的 API 网关，负责外部系统的访问操作）</li>
+<li>服务发现<ul>
+<li>自理式：每个微服务自己完成服务发现</li>
+<li>代理式：由负载均衡系统来完成微服务之间的服务发现</li>
+</ul>
+</li>
+<li>服务路由（进行某次调用请求时，我们还需要从所有符合条件的可用微服务节点中挑选出一个具体的节点发起请求）</li>
+<li>服务容错（从整体上来看，系统中某个微服务出故障的概率会大大增加）</li>
+<li>服务监控（需要服务监控系统来完成微服务节点的监控）</li>
+<li>服务跟踪（跟踪某一个请求在微服务中的完整路径）</li>
+<li>服务安全（接入安全、数据安全、传输安全）</li>
+</ul>
+<h3 id="微内核架构（插件化架构）"><a href="#微内核架构（插件化架构）" class="headerlink" title="微内核架构（插件化架构）"></a>微内核架构（插件化架构）</h3><p>两类组件：</p>
+<ul>
+<li>核心系统（core system）：负责和具体业务功能无关的通用功能（模块加载、模块间通信等）</li>
+<li>插件模块（plug-in modules）：负责实现具体的业务逻辑</li>
+</ul>
+<h2 id="互联网架构模式"><a href="#互联网架构模式" class="headerlink" title="互联网架构模式"></a>互联网架构模式</h2><p><img src="/img/architecture/architecture_5.png" alt="architecture_5"></p>
+<h3 id="“存储层”技术"><a href="#“存储层”技术" class="headerlink" title="“存储层”技术"></a>“存储层”技术</h3><ul>
+<li>SQL存储：以对业务透明的形式提供资源分配、数据备份、迁移、容灾、读写分离、分库分表等一系列服务</li>
+<li>NoSQL存储：存储复杂数据、高性能</li>
+<li>小文件存储（图片等）：HBase、Hadoop</li>
+<li>大文件存储（业务大数据如视频等、海量日志数据）：HBase、HDFS</li>
+</ul>
+<h3 id="“开发层”技术"><a href="#“开发层”技术" class="headerlink" title="“开发层”技术"></a>“开发层”技术</h3><ul>
+<li>开发框架：SSH、SpringMVC等（只是负责完成业务功能的开发）</li>
+<li>Web服务器：Tomcat、Nginx等（真正能够运行起来给用户提供服务）</li>
+<li>容器：Docker等（一个虚拟化或者容器技术）</li>
+</ul>
+<h3 id="“服务层”技术"><a href="#“服务层”技术" class="headerlink" title="“服务层”技术"></a>“服务层”技术</h3><ul>
+<li>配置中心：集中管理各个系统的配置</li>
+<li>服务中心：解决跨系统依赖的“配置”和“调度”问题</li>
+<li>消息队列：为了实现这种跨系统异步通知的中间件系统</li>
+</ul>
+<h3 id="“网络层”技术"><a href="#“网络层”技术" class="headerlink" title="“网络层”技术"></a>“网络层”技术</h3><ul>
+<li>负载均衡（将请求均衡地分配到多个系统上）<ul>
+<li>DNS：实现地理级别的均衡</li>
+<li>Nginx（7层）、LVS（4层）、F5（4层）：用于同一地点内机器级别的负载均衡</li>
+<li>CDN：将内容缓存在离用户最近的地方，用户访问的是缓存的内容（“以空间换时间”）</li>
+</ul>
+</li>
+<li>多机房（主要目标是灾备）<ul>
+<li>同城多机房</li>
+<li>跨城多机房</li>
+<li>跨国多机房</li>
+</ul>
+</li>
+<li>多中心（以多机房为前提，要求每个中心都同时对外提供服务，且业务能够自动在多中心之间切换，故障后不需人工干预自动恢复）</li>
+</ul>
+<h3 id="“用户层”和“业务层”技术"><a href="#“用户层”和“业务层”技术" class="headerlink" title="“用户层”和“业务层”技术"></a>“用户层”和“业务层”技术</h3><ul>
+<li>用户管理（单点登录，授权登陆）</li>
+<li>消息推送（分为短信、邮件、站内信、App推送）</li>
+<li>存储云、图片云（买云服务最快最经济）</li>
+</ul>
+<h3 id="“平台”技术"><a href="#“平台”技术" class="headerlink" title="“平台”技术"></a>“平台”技术</h3><ul>
+<li>运维平台：配置、部署、监控、应急<ul>
+<li>标准化（制定运维标准，规范配置管理、部署流程、监控指标、应急能力等）</li>
+<li>平台化（在运维标准化的基础上，将运维的相关操作都集成到运维平台中）</li>
+<li>自动化（将重复操作固化下来，由系统自动完成）</li>
+<li>可视化（为了提升数据查看效率）</li>
+</ul>
+</li>
+<li>测试平台：单元测试、集成测试、接口测试、性能测试<ul>
+<li>用例管理（为了能够重复执行这些测试用例，测试平台需要将用例管理起来）</li>
+<li>资源管理（具体的运行环境：硬件、软件、业务系统）</li>
+<li>任务管理（将测试用例分配到具体的资源上执行，跟踪任务的执行情况）</li>
+<li>数据管理（测试完成后，记录各种相关的数据）</li>
+</ul>
+</li>
+<li>数据平台<ul>
+<li>数据管理（数据采集、数据存储、数据访问和数据安全）</li>
+<li>数据分析（数据统计、数据挖掘、机器学习、深度学习）</li>
+<li>数据应用（包括在线业务如推荐、广告等，也包括离线业务如报表等）</li>
+</ul>
+</li>
+<li>管理平台<ul>
+<li>身份认证</li>
+<li>权限管理</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/%E5%AD%A6%E6%9E%B6%E6%9E%84/">学架构</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9E%B6%E6%9E%84/" rel="tag">架构</a></li></ul>
+
+            
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/11/11/2018111101-kudu-master%E8%8A%82%E7%82%B9%E8%BF%81%E7%A7%BB/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          kudu-master节点迁移
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/09/24/2018092401-kafka%E6%89%8B%E5%8A%A8%E4%BF%AE%E6%94%B9%E5%89%AF%E6%9C%AC%E6%95%B0ReplicationFactor/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">kafka手动修改副本数ReplicationFactor</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">架构基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">架构概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E7%9A%84%E7%9B%AE%E7%9A%84"><span class="nav-number">1.2.</span> <span class="nav-text">架构设计的目的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%A4%8D%E6%9D%82%E5%BA%A6%E7%9A%84%E6%9D%A5%E6%BA%90"><span class="nav-number">1.3.</span> <span class="nav-text">软件系统复杂度的来源</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E9%AB%98%E6%80%A7%E8%83%BD"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 高性能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 高可用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%8F%AF%E6%89%A9%E5%B1%95"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 可扩展</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E4%BD%8E%E6%88%90%E6%9C%AC"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 低成本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E5%AE%89%E5%85%A8"><span class="nav-number">1.3.5.</span> <span class="nav-text">5. 安全</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-%E8%A7%84%E6%A8%A1"><span class="nav-number">1.3.6.</span> <span class="nav-text">6. 规模</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%89%E5%8E%9F%E5%88%99"><span class="nav-number">1.4.</span> <span class="nav-text">架构设计三原则</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%88%E9%80%82%E5%8E%9F%E5%88%99"><span class="nav-number">1.4.1.</span> <span class="nav-text">合适原则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%8E%9F%E5%88%99"><span class="nav-number">1.4.2.</span> <span class="nav-text">简单原则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%BC%94%E5%8C%96%E5%8E%9F%E5%88%99"><span class="nav-number">1.4.3.</span> <span class="nav-text">演化原则</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E6%B5%81%E7%A8%8B"><span class="nav-number">1.5.</span> <span class="nav-text">架构设计流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E8%AF%86%E5%88%AB%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-number">1.5.1.</span> <span class="nav-text">第一步：识别复杂度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E8%AE%BE%E8%AE%A1%E5%A4%87%E9%80%89%E6%96%B9%E6%A1%88"><span class="nav-number">1.5.2.</span> <span class="nav-text">第二步：设计备选方案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E8%AF%84%E4%BC%B0%E5%92%8C%E9%80%89%E6%8B%A9%E5%A4%87%E9%80%89%E6%96%B9%E6%A1%88"><span class="nav-number">1.5.3.</span> <span class="nav-text">第三步：评估和选择备选方案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E8%AF%A6%E7%BB%86%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.5.4.</span> <span class="nav-text">第四步：详细方案设计</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E6%80%A7%E8%83%BD%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">高性能架构模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E6%80%A7%E8%83%BD%E6%95%B0%E6%8D%AE%E5%BA%93%E9%9B%86%E7%BE%A4"><span class="nav-number">2.1.</span> <span class="nav-text">高性能数据库集群</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="nav-number">2.1.1.</span> <span class="nav-text">读写分离</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8"><span class="nav-number">2.1.2.</span> <span class="nav-text">分库分表</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%9A%E5%8A%A1%E5%88%86%E5%BA%93"><span class="nav-number">2.1.2.1.</span> <span class="nav-text">业务分库</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%86%E8%A1%A8"><span class="nav-number">2.1.2.2.</span> <span class="nav-text">分表</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%AB%98%E6%80%A7%E8%83%BDNoSQL"><span class="nav-number">2.1.3.</span> <span class="nav-text">高性能NoSQL</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%AB%98%E6%80%A7%E8%83%BD%E7%BC%93%E5%AD%98"><span class="nav-number">2.1.4.</span> <span class="nav-text">高性能缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-number">2.1.4.1.</span> <span class="nav-text">缓存穿透</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-number">2.1.4.2.</span> <span class="nav-text">缓存雪崩</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%83%AD%E7%82%B9"><span class="nav-number">2.1.4.3.</span> <span class="nav-text">缓存热点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E6%80%A7%E8%83%BD%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">2.2.</span> <span class="nav-text">高性能服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%95%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E9%AB%98%E6%80%A7%E8%83%BD"><span class="nav-number">2.2.1.</span> <span class="nav-text">单服务器的高性能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%9B%86%E7%BE%A4%E7%9A%84%E9%AB%98%E6%80%A7%E8%83%BD"><span class="nav-number">2.2.2.</span> <span class="nav-text">服务器集群的高性能</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-number">2.2.2.1.</span> <span class="nav-text">负载均衡</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BB%BB%E5%8A%A1%E5%88%86%E9%85%8D%E7%AE%97%E6%B3%95"><span class="nav-number">2.2.2.2.</span> <span class="nav-text">任务分配算法</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">高可用架构模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84CAP%E5%AE%9A%E7%90%86"><span class="nav-number">3.1.</span> <span class="nav-text">分布式系统架构CAP定理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84"><span class="nav-number">3.2.</span> <span class="nav-text">高可用存储架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8C%E6%9C%BA%E9%AB%98%E5%8F%AF%E7%94%A8%E6%9E%B6%E6%9E%84%EF%BC%88%E9%9A%90%E5%90%AB%E7%9A%84%E5%81%87%E8%AE%BE%EF%BC%9A%E4%B8%BB%E6%9C%BA%E8%83%BD%E5%A4%9F%E5%AD%98%E5%82%A8%E6%89%80%E6%9C%89%E6%95%B0%E6%8D%AE%EF%BC%89"><span class="nav-number">3.2.1.</span> <span class="nav-text">双机高可用架构（隐含的假设：主机能够存储所有数据）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4%E5%BC%8F%E9%AB%98%E5%8F%AF%E7%94%A8%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84"><span class="nav-number">3.2.2.</span> <span class="nav-text">集群式高可用存储架构</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E7%BE%A4"><span class="nav-number">3.2.2.1.</span> <span class="nav-text">数据集群</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%88%86%E5%8C%BA"><span class="nav-number">3.2.2.2.</span> <span class="nav-text">数据分区</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="nav-number">3.3.</span> <span class="nav-text">计算高可用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%9A%E5%8A%A1%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="nav-number">3.4.</span> <span class="nav-text">业务高可用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E7%BA%A7%E7%9A%84%E6%95%85%E9%9A%9C"><span class="nav-number">3.4.1.</span> <span class="nav-text">接口级的故障</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E6%89%A9%E5%B1%95%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">可扩展架构模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E6%89%A9%E5%B1%95%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%80%9D%E6%83%B3"><span class="nav-number">4.1.</span> <span class="nav-text">可扩展的基本思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%B1%82%E6%9E%B6%E6%9E%84"><span class="nav-number">4.2.</span> <span class="nav-text">分层架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SOA%E6%9E%B6%E6%9E%84%EF%BC%88%E9%9D%A2%E5%90%91%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%EF%BC%89"><span class="nav-number">4.3.</span> <span class="nav-text">SOA架构（面向服务架构）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84"><span class="nav-number">4.4.</span> <span class="nav-text">微服务架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%8B%86%E5%88%86%E6%96%B9%E6%B3%95%EF%BC%88%E7%BB%B4%E5%BA%A6%EF%BC%89%EF%BC%9A"><span class="nav-number">4.4.1.</span> <span class="nav-text">微服务拆分方法（维度）：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD%EF%BC%9A"><span class="nav-number">4.4.2.</span> <span class="nav-text">微服务基础设施：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E5%86%85%E6%A0%B8%E6%9E%B6%E6%9E%84%EF%BC%88%E6%8F%92%E4%BB%B6%E5%8C%96%E6%9E%B6%E6%9E%84%EF%BC%89"><span class="nav-number">4.5.</span> <span class="nav-text">微内核架构（插件化架构）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%92%E8%81%94%E7%BD%91%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">互联网架构模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%80%9C%E5%AD%98%E5%82%A8%E5%B1%82%E2%80%9D%E6%8A%80%E6%9C%AF"><span class="nav-number">5.1.</span> <span class="nav-text">“存储层”技术</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%80%9C%E5%BC%80%E5%8F%91%E5%B1%82%E2%80%9D%E6%8A%80%E6%9C%AF"><span class="nav-number">5.2.</span> <span class="nav-text">“开发层”技术</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%80%9C%E6%9C%8D%E5%8A%A1%E5%B1%82%E2%80%9D%E6%8A%80%E6%9C%AF"><span class="nav-number">5.3.</span> <span class="nav-text">“服务层”技术</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%80%9C%E7%BD%91%E7%BB%9C%E5%B1%82%E2%80%9D%E6%8A%80%E6%9C%AF"><span class="nav-number">5.4.</span> <span class="nav-text">“网络层”技术</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%80%9C%E7%94%A8%E6%88%B7%E5%B1%82%E2%80%9D%E5%92%8C%E2%80%9C%E4%B8%9A%E5%8A%A1%E5%B1%82%E2%80%9D%E6%8A%80%E6%9C%AF"><span class="nav-number">5.5.</span> <span class="nav-text">“用户层”和“业务层”技术</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%80%9C%E5%B9%B3%E5%8F%B0%E2%80%9D%E6%8A%80%E6%9C%AF"><span class="nav-number">5.6.</span> <span class="nav-text">“平台”技术</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+      <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2020 GuoYL&#39;s Notes All Rights Reserved.
+          
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hiero" target="_blank">hiero</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var contentdiv = document.getElementById("content");
+
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+</script>
+
+<!-- Custome JS -->
+
+<script src="/js/my.js"></script>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  
+  <title>cdh离线安装记录及常见错误处理 | GuoYL&#39;s Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="cloudera-manager" />
+  
+  
+  
+  
+  <meta name="description" content="准备安装包cloudera manager下载地址 CDH下载地址选择自己合适的版本 manifest.json下载地址">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CDH离线安装记录及常见错误处理">
+<meta property="og:url" content="http://guoyanlei.top/2018/09/11/2018091201-CDH%E7%A6%BB%E7%BA%BF%E5%AE%89%E8%A3%85%E8%AE%B0%E5%BD%95%E5%8F%8A%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/index.html">
+<meta property="og:site_name" content="GuoYL&#39;s Notes">
+<meta property="og:description" content="准备安装包cloudera manager下载地址 CDH下载地址选择自己合适的版本 manifest.json下载地址">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-09-11T07:30:00.000Z">
+<meta property="article:modified_time" content="2020-11-01T13:47:33.809Z">
+<meta property="article:author" content="Guo Yanlei">
+<meta property="article:tag" content="cloudera-manager">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="GuoYL&#39;s Notes" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/hiero.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+  <!-- Custom CSS -->
+  
+<link rel="stylesheet" href="/css/my.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<script>
+var themeMenus = {};
+
+  themeMenus["/"] = "首页"; 
+
+  themeMenus["/archives"] = "归档"; 
+
+  themeMenus["/categories"] = "分类"; 
+
+  themeMenus["/tags"] = "标签"; 
+
+  themeMenus["/about"] = "关于"; 
+
+</script>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  <header id="allheader" class="site-header" role="banner">
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="GuoYL&#39;s Notes" rel="home"> GuoYL&#39;s Notes </a>
+            
+          </h1>
+
+          
+            <div class="site-description">大志非才不就，大才非学不成</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+            <div class="clearfix sf-menu">
+
+              <ul id="main-nav" class="nmenu sf-js-enabled">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+
+      </div>
+  </div>
+</header>
+
+
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-2018091201-CDH离线安装记录及常见错误处理" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      CDH离线安装记录及常见错误处理
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	Posted on <a href="/2018/09/11/2018091201-CDH%E7%A6%BB%E7%BA%BF%E5%AE%89%E8%A3%85%E8%AE%B0%E5%BD%95%E5%8F%8A%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" class="article-date">
+	  <time datetime="2018-09-11T07:30:00.000Z" itemprop="datePublished">九月 11, 2018</time>
+	</a>
+
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="准备安装包"><a href="#准备安装包" class="headerlink" title="准备安装包"></a>准备安装包</h3><p><a href="http://archive.cloudera.com/cm5/cm/5/" target="_blank" rel="noopener">cloudera manager下载地址</a></p>
+<p><a href="http://archive.cloudera.com/cdh5/parcels/5.12.2/" target="_blank" rel="noopener">CDH下载地址</a>选择自己合适的版本</p>
+<p><a href="http://archive.cloudera.com/cdh5/parcels/5.12.2/manifest.json" target="_blank" rel="noopener">manifest.json下载地址</a></p>
+<a id="more"></a>
+<h3 id="网络配置"><a href="#网络配置" class="headerlink" title="网络配置"></a>网络配置</h3><p>对于集群中搜索节点都需要做：</p>
+<ol>
+<li>修改主机名称</li>
+<li>关闭防火墙</li>
+</ol>
+<h3 id="配置免密码登陆"><a href="#配置免密码登陆" class="headerlink" title="配置免密码登陆"></a>配置免密码登陆</h3><p>对于集群中所有节点，任意两个节点实现免密码登陆。并且开启ssh服务。</p>
+<h3 id="安装jdk"><a href="#安装jdk" class="headerlink" title="安装jdk"></a>安装jdk</h3><p>对于集群中节点安装jdk，可以自己安装，也可以通过cloudera manager安装。安装完成之后，配置<code>JAVA_HOME</code>。对于线上，建议自己安装。</p>
+<h3 id="安装和配置NTP服务"><a href="#安装和配置NTP服务" class="headerlink" title="安装和配置NTP服务"></a>安装和配置NTP服务</h3><p>cloudera manager通过ntp服务，保持集群内的时钟同步。时钟偏差会应用服务，特别是kudu，因为kudu的事务需要以来时钟一致。</p>
+<p>安装NTP<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install ntp</span><br></pre></td></tr></table></figure></p>
+<p>集群内，建议在集群内做一个NTP服务器，作为优先级最高的NTP服务器，其它的作为备用。</p>
+<p>手动同步可以如下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ntpdate -d NTP服务器的host或者IP</span><br></pre></td></tr></table></figure></p>
+<p>可以通过如下命令查看NTP的统计<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ntpstat</span><br></pre></td></tr></table></figure></p>
+<p>还可以通过ntpq查看ntp服务同步各个服务器的情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ntpq -p</span><br></pre></td></tr></table></figure>
+<p>若系统是CentOS7的同步时钟的方式建议使用chrony，<a href="http://guoyanlei.top/2018/05/30/2018053001-CentOS7.2-%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E5%B7%A5%E5%85%B7ntp&amp;chrony/">将ntp切换为chrony参考之前的文章</a></p>
+<h3 id="准备MySQL"><a href="#准备MySQL" class="headerlink" title="准备MySQL"></a>准备MySQL</h3><p>cloudera-manager、hive、hue、oozie都需要MySQL来存储元数据。所以需要提前准备好一台MySQL。</p>
+<p>对于不同不同的服务，采用不同的kudu，不同的用户，进行授权。</p>
+<h3 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h3><p>通过yum安装cloudera-manager的依赖，命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">yum -y install chkconfig</span><br><span class="line">yum -y install bind-utils</span><br><span class="line">yum -y install psmisc</span><br><span class="line">yum -y install libxslt</span><br><span class="line">yum -y install zlib</span><br><span class="line">yum -y install sqlite</span><br><span class="line">yum -y install cyrus-sasl-plain</span><br><span class="line">yum -y install cyrus-sasl-gssapi</span><br><span class="line">yum -y install fuse</span><br><span class="line">yum -y install portmap</span><br><span class="line">yum -y install fuse-libs</span><br><span class="line">yum -y install redhat-lsb</span><br></pre></td></tr></table></figure>
+<h3 id="安装cloudera-manager-server"><a href="#安装cloudera-manager-server" class="headerlink" title="安装cloudera manager server"></a>安装cloudera manager server</h3><ol>
+<li><p>在cloudera manager server所在节点创建cloudera-manager安装目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/dmp/cloudera-manager</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将下载好的cloudera-manager安装包cloudera-manager-centos7-cm5.12.2_x86_64.tar.gz解压放在改目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf cloudera-manager-centos7-cm5.12.2_x86_64.tar.gz -C /data/dmp/cloudera-manager</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>创建<code>cloudera-scm</code>用户</li>
+</ol>
+<p>Cloudera管理器服务器和托管服务被配置为在默认情况下使用用户帐户Cloudera-scm，创建具有这个名称的用户是最简单的方法。创建用户，在安装完成后自动使用。</p>
+<p>执行如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">useradd --system --home=/data/dmp/cloudera-manager/cm-5.12.2/run/cloudera-scm-server/ --no-create-home --shell=/bin/false --comment &quot;Cloudera SCM User&quot; cloudera-scm</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>下载MySQL驱动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd  /data/dmp/cloudera-manager/cm-5.12.2/share/cmf/lib</span><br><span class="line"></span><br><span class="line">wget http://maven.aliyun.com/nexus/service/local/repositories/hongkong-nexus/content/Mysql/mysql-connector-java/5.1.38/mysql-connector-java-5.1.38.jar</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置cloudera manager server的数据库</p>
+<p>进入cloudera-manager安装目录下的<code>cm-5.12.2/share/cmf/schema/</code>目录中，找到<code>scm_prepare_database.sh</code>，这个脚本是执行cloudera-amanger数据库初始化的脚本。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd /data/dmp/cloudera-manager/cm-5.12.2/share/cmf/schema/</span><br><span class="line"></span><br><span class="line">./scm_prepare_database.sh mysql cm -h $&#123;MySQL节点的host或者ip&#125; -u$&#123;MySQL用户&#125; -p$&#123;MySQL密码&#125; --scm-host $&#123;cloudera manager server的ip或者host&#125; scm scm scm</span><br></pre></td></tr></table></figure>
+<p>看到如下信息，就配置成功</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[main] DbCommandExecutor              INFO  Successfully connected to database.</span><br><span class="line">All done, your SCM database is configured correctly!</span><br></pre></td></tr></table></figure>
+<p>格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scm_prepare_database.sh mysql cm -h &lt;hostName&gt; -u&lt;username&gt;  -p&lt;password&gt; --scm-host &lt;hostName&gt;  scm scm scm</span><br><span class="line"></span><br><span class="line">对应于：数据库类型  数据库 服务器 用户名 密码  –scm-host  Cloudera_Manager_Server 所在节点……</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Manager节点上创建Parcel目录</p>
+<p>(1). 创建目录<code>/data/dmp/cloudera/parcel-repo</code>，并且将该目录授权给cloudera-scm用户，执行命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/dmp/cloudera/parcel-repo</span><br><span class="line"></span><br><span class="line">chown cloudera-scm:cloudera-scm /data/dmp/cloudera/parcel-repo</span><br></pre></td></tr></table></figure>
+<p>(2) 将爱在好的parcel复制到<code>/data/dmp/cloudera/parcel-repo</code>目录下，parcel列表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CDH-5.12.2-1.cdh5.12.2.p0.4-el7.parcel</span><br><span class="line">CDH-5.12.2-1.cdh5.12.2.p0.4-el7.parcel.sha</span><br><span class="line">manifest.json</span><br><span class="line">KUDU-1.4.0-1.cdh5.12.2.p0.8-el7.parcel</span><br><span class="line">KUDU-1.4.0-1.cdh5.12.2.p0.8-el7.parcel.sha</span><br></pre></td></tr></table></figure>
+<p>注意，需要将<code>CDH-5.12.2-1.cdh5.12.2.p0.4-el7.parcel.sha1</code>重命名为<code>CDH-5.12.2-1.cdh5.12.2.p0.4-el7.parcel.sha</code>，否则系统会重新下载。</p>
+</li>
+</ol>
+<h3 id="安装cloudera-manager的agent"><a href="#安装cloudera-manager的agent" class="headerlink" title="安装cloudera-manager的agent"></a>安装cloudera-manager的agent</h3><p>对于通过cloudera-manager管理的主机，都需要安装agent，cloudera-manager的安装软件和监控都是通过agent完成的。所有加入的节点，都需要cloudera-manager的server节点保持通信，实现ssh免密码登陆。</p>
+<p>头3步和cloudera manager server节点相同</p>
+<ol>
+<li><p>在cloudera manager server所在节点创建cloudera-manager安装目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/dmp/cloudera-manager</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将下载好的cloudera-manager安装包cloudera-manager-centos7-cm5.12.2_x86_64.tar.gz解压放在改目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf cloudera-manager-centos7-cm5.12.2_x86_64.tar.gz -C /data/dmp/cloudera-manager</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建<code>cloudera-scm</code>用户</p>
+<p>Cloudera管理器服务器和托管服务被配置为在默认情况下使用用户帐户Cloudera-scm，创建具有这个名称的用户是最简单的方法。创建用户，在安装完成后自动使用。</p>
+<p>执行如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">useradd --system --home=/data/dmp/cloudera-manager/cm-5.12.2/run/cloudera-scm-server/ --no-create-home --shell=/bin/false --comment &quot;Cloudera SCM User&quot; cloudera-scm</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置agent</p>
+<p>在<code>/data/dmp/cloudera-manager/cm-5.12.2/etc/cloudera-scm-agent/config.ini</code>中可以pacel、各个服务的安装目录、cloudera-manager server的地址。</p>
+</li>
+</ol>
+<ol start="5">
+<li><p>创建parcels目录</p>
+<p>在agent节点上，创建<code>/data/dmp/cloudera/parcels</code>，并且将改目录用户组授权给cloudera-scm</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/dmp/cloudera/parcels</span><br><span class="line"></span><br><span class="line">chown cloudera-scm:cloudera-scm /data/dmp/cloudera/parcels</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h3><ol>
+<li><p>在manager节点启动cloudera-scm-server服务。执行命令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/dmp/cloudera-manager/cm-5.12.2/etc/init.d/cloudera-scm-server start</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在agent节点启动agent</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/dmp/cloudera-manager/cm-5.12.2/etc/init.d/cloudera-scm-agent start</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="登陆cloudera-manager安装服务"><a href="#登陆cloudera-manager安装服务" class="headerlink" title="登陆cloudera manager安装服务"></a>登陆cloudera manager安装服务</h3><p>访问cloudera manager server节点的7180端口，这里的地址<code>http://cloudera-manager.etouch.cn/cmf/login</code></p>
+<p>通过用户名和密码登陆，默认的用户名和密码都是admin。</p>
+<p>安装提示一步一步进行配置，在安装会有机器监测，对于监测的问题，cloudera manager会有提示，提示如何修改。</p>
+<h4 id="向集群添加安装新的节点agent"><a href="#向集群添加安装新的节点agent" class="headerlink" title="向集群添加安装新的节点agent"></a>向集群添加安装新的节点agent</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/dmp/cloudera-manager</span><br><span class="line">tar -zxvf cloudera-manager-centos7-cm5.12.2_x86_64.tar.gz -C /data/dmp/cloudera-manager</span><br><span class="line"></span><br><span class="line">useradd --system --home=/data/dmp/cloudera-manager/cm-5.12.2/run/cloudera-scm-server/ --no-create-home --shell=/bin/false --comment "Cloudera SCM User" cloudera-scm</span><br><span class="line"></span><br><span class="line">cd /data/dmp/cloudera-manager/cm-5.12.2/etc/cloudera-scm-agent</span><br><span class="line">rm -f config.ini</span><br><span class="line"></span><br><span class="line">scp /data/dmp/cloudera-manager/cm-5.12.2/etc/cloudera-scm-agent/config.ini root@node104.bigdata.dmp.local.com:/data/dmp/cloudera-manager/cm-5.12.2/etc/cloudera-scm-agent/config.ini</span><br><span class="line"></span><br><span class="line">mkdir -p /data/dmp/cloudera/parcels</span><br><span class="line">chown cloudera-scm:cloudera-scm /data/dmp/cloudera/parcels</span><br></pre></td></tr></table></figure>
+<h3 id="Cloudera-Manager安装常见错误和脚本"><a href="#Cloudera-Manager安装常见错误和脚本" class="headerlink" title="Cloudera Manager安装常见错误和脚本"></a>Cloudera Manager安装常见错误和脚本</h3><h4 id="1-防火墙和selinux关闭"><a href="#1-防火墙和selinux关闭" class="headerlink" title="1. 防火墙和selinux关闭"></a>1. 防火墙和selinux关闭</h4><ul>
+<li>出现连接拒绝，用telnet测试相关端口，server：7180、agent：7182</li>
+</ul>
+<h4 id="2-CM-agent的日志在-data-dmp-log下面"><a href="#2-CM-agent的日志在-data-dmp-log下面" class="headerlink" title="2. CM agent的日志在/data/dmp/log下面"></a>2. CM agent的日志在/data/dmp/log下面</h4><ul>
+<li>新装agent起不来，可能需要手动创建相关文件夹。见：<a href="http://community.cloudera.com/t5/Cloudera-Manager-Installation/Failed-to-receive-heartbeat-from-agent-CM-server-guid/m-p/64228" target="_blank" rel="noopener">http://community.cloudera.com/t5/Cloudera-Manager-Installation/Failed-to-receive-heartbeat-from-agent-CM-server-guid/m-p/64228</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/cloudera-manager/">cloudera-manager</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cloudera-manager/" rel="tag">cloudera-manager</a></li></ul>
+
+            
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/09/20/2018092001-kafka%E5%9C%A8zk%E4%B8%AD%E7%9A%84%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          kafka在zk中的目录结构
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/10/2018081001-CDH-HDFS%E8%AF%AF%E5%88%A0HA%E7%9A%84namenode%E5%90%8E%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">CDH-HDFS误删HA的namenode后无法启动</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E5%AE%89%E8%A3%85%E5%8C%85"><span class="nav-number">1.</span> <span class="nav-text">准备安装包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">网络配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E9%99%86"><span class="nav-number">3.</span> <span class="nav-text">配置免密码登陆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85jdk"><span class="nav-number">4.</span> <span class="nav-text">安装jdk</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AENTP%E6%9C%8D%E5%8A%A1"><span class="nav-number">5.</span> <span class="nav-text">安装和配置NTP服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%86%E5%A4%87MySQL"><span class="nav-number">6.</span> <span class="nav-text">准备MySQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="nav-number">7.</span> <span class="nav-text">安装依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85cloudera-manager-server"><span class="nav-number">8.</span> <span class="nav-text">安装cloudera manager server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85cloudera-manager%E7%9A%84agent"><span class="nav-number">9.</span> <span class="nav-text">安装cloudera-manager的agent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E6%9C%8D%E5%8A%A1"><span class="nav-number">10.</span> <span class="nav-text">启动服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%99%BB%E9%99%86cloudera-manager%E5%AE%89%E8%A3%85%E6%9C%8D%E5%8A%A1"><span class="nav-number">11.</span> <span class="nav-text">登陆cloudera manager安装服务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%91%E9%9B%86%E7%BE%A4%E6%B7%BB%E5%8A%A0%E5%AE%89%E8%A3%85%E6%96%B0%E7%9A%84%E8%8A%82%E7%82%B9agent"><span class="nav-number">11.1.</span> <span class="nav-text">向集群添加安装新的节点agent</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cloudera-Manager%E5%AE%89%E8%A3%85%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF%E5%92%8C%E8%84%9A%E6%9C%AC"><span class="nav-number">12.</span> <span class="nav-text">Cloudera Manager安装常见错误和脚本</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E9%98%B2%E7%81%AB%E5%A2%99%E5%92%8Cselinux%E5%85%B3%E9%97%AD"><span class="nav-number">12.1.</span> <span class="nav-text">1. 防火墙和selinux关闭</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-CM-agent%E7%9A%84%E6%97%A5%E5%BF%97%E5%9C%A8-data-dmp-log%E4%B8%8B%E9%9D%A2"><span class="nav-number">12.2.</span> <span class="nav-text">2. CM agent的日志在&#x2F;data&#x2F;dmp&#x2F;log下面</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+      <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2020 GuoYL&#39;s Notes All Rights Reserved.
+          
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hiero" target="_blank">hiero</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var contentdiv = document.getElementById("content");
+
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+</script>
+
+<!-- Custome JS -->
+
+<script src="/js/my.js"></script>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>

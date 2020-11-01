@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  
+  <title>基于sentry和hue对数仓表做权限管理 | GuoYL&#39;s Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="huesentry" />
+  
+  
+  
+  
+  <meta name="description" content="Hue简介Hue是什么Hue是一个可快速开发和调试Hadoop生态系统各种应用的一个基于浏览器的图形化用户接口。  Hue是出自CDH公司，在基于CDH的大数据集群中安装和使用非常方便。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于Sentry和Hue对数仓表做权限管理">
+<meta property="og:url" content="http://guoyanlei.top/2019/03/20/2019032001-%E5%9F%BA%E4%BA%8ESentry%E5%92%8CHue%E5%AF%B9%E6%95%B0%E4%BB%93%E8%A1%A8%E5%81%9A%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="GuoYL&#39;s Notes">
+<meta property="og:description" content="Hue简介Hue是什么Hue是一个可快速开发和调试Hadoop生态系统各种应用的一个基于浏览器的图形化用户接口。  Hue是出自CDH公司，在基于CDH的大数据集群中安装和使用非常方便。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://guoyanlei.top/img/hue-sentry/hue-arch.png">
+<meta property="og:image" content="http://guoyanlei.top/img/hue-sentry/sentry-arch.png">
+<meta property="article:published_time" content="2019-03-20T07:30:00.000Z">
+<meta property="article:modified_time" content="2019-03-20T03:58:07.213Z">
+<meta property="article:author" content="Guo Yanlei">
+<meta property="article:tag" content="hue">
+<meta property="article:tag" content="sentry">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://guoyanlei.top/img/hue-sentry/hue-arch.png">
+  
+    <link rel="alternate" href="/atom.xml" title="GuoYL&#39;s Notes" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/hiero.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+  <!-- Custom CSS -->
+  
+<link rel="stylesheet" href="/css/my.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<script>
+var themeMenus = {};
+
+  themeMenus["/"] = "首页"; 
+
+  themeMenus["/archives"] = "归档"; 
+
+  themeMenus["/categories"] = "分类"; 
+
+  themeMenus["/tags"] = "标签"; 
+
+  themeMenus["/about"] = "关于"; 
+
+</script>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  <header id="allheader" class="site-header" role="banner">
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="GuoYL&#39;s Notes" rel="home"> GuoYL&#39;s Notes </a>
+            
+          </h1>
+
+          
+            <div class="site-description">大志非才不就，大才非学不成</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+            <div class="clearfix sf-menu">
+
+              <ul id="main-nav" class="nmenu sf-js-enabled">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+
+      </div>
+  </div>
+</header>
+
+
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-2019032001-基于Sentry和Hue对数仓表做权限管理" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      基于Sentry和Hue对数仓表做权限管理
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	Posted on <a href="/2019/03/20/2019032001-%E5%9F%BA%E4%BA%8ESentry%E5%92%8CHue%E5%AF%B9%E6%95%B0%E4%BB%93%E8%A1%A8%E5%81%9A%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86/" class="article-date">
+	  <time datetime="2019-03-20T07:30:00.000Z" itemprop="datePublished">三月 20, 2019</time>
+	</a>
+
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Hue简介"><a href="#Hue简介" class="headerlink" title="Hue简介"></a>Hue简介</h3><h4 id="Hue是什么"><a href="#Hue是什么" class="headerlink" title="Hue是什么"></a>Hue是什么</h4><p>Hue是一个可快速开发和调试Hadoop生态系统各种应用的一个基于浏览器的图形化用户接口。 </p>
+<p>Hue是出自CDH公司，在基于CDH的大数据集群中安装和使用非常方便。</p>
+<a id="more"></a>
+<h4 id="Hue能干什么"><a href="#Hue能干什么" class="headerlink" title="Hue能干什么"></a>Hue能干什么</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">1.访问HDFS和文件浏览 </span><br><span class="line">2.通过web调试和开发hive以及数据结果展示 </span><br><span class="line">3.查询solr和结果展示，报表生成 </span><br><span class="line">4.通过web调试和开发impala交互式SQL Query </span><br><span class="line">5.spark调试和开发 </span><br><span class="line">6.Pig开发和调试 </span><br><span class="line">7.oozie任务的开发，监控，和工作流协调调度 </span><br><span class="line">8.Hbase数据查询和修改，数据展示 </span><br><span class="line">9.Hive的元数据（metastore）查询 </span><br><span class="line">10.MapReduce任务进度查看，日志追踪 </span><br><span class="line">11.创建和提交MapReduce，Streaming，Java job任务 </span><br><span class="line">12.Sqoop2的开发和调试 </span><br><span class="line">13.Zookeeper的浏览和编辑 </span><br><span class="line">14.数据库（MySQL，PostGres，SQlite，Oracle）的查询和展示</span><br></pre></td></tr></table></figure>
+<p>其架构图：</p>
+<p><img src="/img/hue-sentry/hue-arch.png" alt="hue-arch"></p>
+<h4 id="Hue有哪些不足"><a href="#Hue有哪些不足" class="headerlink" title="Hue有哪些不足"></a>Hue有哪些不足</h4><ul>
+<li>虽然提供了角色权限管理，但是仅是针对Hue各功能的权限控制</li>
+<li>没有办法从库级别、表级别对用户做权限管理</li>
+</ul>
+<h3 id="Sentry简介"><a href="#Sentry简介" class="headerlink" title="Sentry简介"></a>Sentry简介</h3><h4 id="Sentry是什么"><a href="#Sentry是什么" class="headerlink" title="Sentry是什么"></a>Sentry是什么</h4><p>Apache Sentry是一个适用于Hadoop，基于角色粒度的授权模块，旨在成为Hadoop组件的可插拔授权引擎。它允许定义授权规则以验证用户或应用程序对Hadoop资源的访问请求。目前可以与Apache Hive，Apache Solr，Impala和HDFS（仅限于Hive表数据）一起开箱即用。</p>
+<p>Sentry同样是出自CDH公司，在基于CDH的大数据集群中安装和使用非常方便。</p>
+<p><a href="https://cwiki.apache.org/confluence/display/SENTRY/Sentry+Tutorial" target="_blank" rel="noopener">官网doc</a></p>
+<p>其架构图：</p>
+<p><img src="/img/hue-sentry/sentry-arch.png" alt="sentry-arch"></p>
+<p>主要分为三个模块：</p>
+<ul>
+<li>Sentry Server：管理授权元数据。它支持安全检索和操作元数据的界面;</li>
+<li>Data Engine：数据处理引擎（如Hive或Impala）。数据引擎执行前会加载Sentry插件，拦截所有访问资源的请求并将其路由到Sentry插件进行验证;</li>
+<li>Sentry plugin：运行在数据引擎中，验证用户是否有权限。</li>
+</ul>
+<h4 id="Sentry能干什么"><a href="#Sentry能干什么" class="headerlink" title="Sentry能干什么"></a>Sentry能干什么</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- 对hive库、表、表字段做权限控制</span><br><span class="line">- 对impala库、表、表字段做权限控制，与hive的区别是可以缓存权限（在Catalog server和Impalad都有），授权验证在本地发生并且速度会更快</span><br><span class="line">- 对hdfs目录、文件做权限控制，更关注的是hive数仓的数据（任何属于Hive或Impala中表的数据）</span><br><span class="line">- 权限可分为三级：</span><br><span class="line"> - SELECT privilege -&gt; Read access on the file.</span><br><span class="line"> - INSERT privilege -&gt; Write access on the file.</span><br><span class="line"> - ALL privilege -&gt; Read and Write access on the file.</span><br></pre></td></tr></table></figure>
+<h3 id="基于Sentry和Hue对数仓表做权限管理"><a href="#基于Sentry和Hue对数仓表做权限管理" class="headerlink" title="基于Sentry和Hue对数仓表做权限管理"></a>基于Sentry和Hue对数仓表做权限管理</h3><h4 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h4><p>基于Cloudera-manager可以直接安装Hue和Sentry，安装Hue前需要先安装Oozie。</p>
+<p>安装Hue和Sentry都需要先创建mysql库：hue和sentry，并在安装时制定库和库地址。</p>
+<ol>
+<li>Hue安装遇到的问题</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 测试mysql链接时缺少jar包，找不到jdbc driver</span><br><span class="line">解决方法：需要将这个包放到这个路径下</span><br><span class="line">/usr/share/java/mysql-connector-java.jar</span><br><span class="line"></span><br><span class="line"># 安装后启动进程失败</span><br><span class="line">原因：hue所在的服务器环境没有预先安装httpd，mod_ssl服务</span><br><span class="line">解决方法：</span><br><span class="line">yum -y install httpd</span><br><span class="line">yum -y install mod_ssl</span><br></pre></td></tr></table></figure>
+<h4 id="权限配置"><a href="#权限配置" class="headerlink" title="权限配置"></a>权限配置</h4><h5 id="修改Hive的Sentry配置"><a href="#修改Hive的Sentry配置" class="headerlink" title="修改Hive的Sentry配置"></a>修改Hive的Sentry配置</h5><ol>
+<li>在hive配置中启用sentry</li>
+<li>禁用“HiveServer2 启用模拟：hive.server2.enable.impersonation”</li>
+<li>配置“sentry-site.xml 的 Hive 服务高级配置代码段（安全阀）”</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;property&gt;</span><br><span class="line">   &lt;name&gt;sentry.hive.testing.mode&lt;/name&gt;</span><br><span class="line">   &lt;value&gt;true&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br></pre></td></tr></table></figure>
+<h5 id="修改Impala的Sentry配置"><a href="#修改Impala的Sentry配置" class="headerlink" title="修改Impala的Sentry配置"></a>修改Impala的Sentry配置</h5><ol>
+<li>在Impala配置中启用sentry</li>
+<li>重启Impala即可</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">注意：若启用了sentry，那么在Impala-jdbc调用时许指定用户。如</span><br><span class="line">原来的url：jdbc:impala://node1.lb.bigdata.dmp.com:21050/prod;AuthMech=0</span><br><span class="line">指定用户后url：jdbc:impala://node1.lb.bigdata.dmp.com:21050/prod;AuthMech=3;UID=impala;PWD=;UseSasl=0</span><br></pre></td></tr></table></figure>
+<h4 id="修改Hue的Sentry配置"><a href="#修改Hue的Sentry配置" class="headerlink" title="修改Hue的Sentry配置"></a>修改Hue的Sentry配置</h4><ol>
+<li>在Hue配置中启用sentry</li>
+<li>重启Hue即可</li>
+</ol>
+<h5 id="hive角色、用户组和Hue的区别"><a href="#hive角色、用户组和Hue的区别" class="headerlink" title="hive角色、用户组和Hue的区别"></a>hive角色、用户组和Hue的区别</h5><ul>
+<li>hive role：控制表、库的select、insert权限（通过sentry可以管理）</li>
+<li>hive group：通常被指定拥有哪些 hive role </li>
+<li>hue group：通过操作系统上的用户组和Hive的用户组进行关联。因此，配置完Hue用户组后还需配置OS上的用户组（需要配置所有hiveserver3，hue，sentry所在的机器) </li>
+<li>hue username：需要和hue group保持相同</li>
+</ul>
+<h5 id="权限配置-1"><a href="#权限配置-1" class="headerlink" title="权限配置"></a>权限配置</h5><ol>
+<li>使用admin用户登录Hue，创建group：hive（赋予所有权限），username：hive</li>
+<li>使用hive用户登录，即可在security菜单中管理hive roles了</li>
+<li>下面是总结创建一个用户的过程</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1）在hue中创建group（页面操作，admin用户登录）</span><br><span class="line">2）在hue中创建用户（页面操作，admin用户登录），并指定group：</span><br><span class="line">3）所有hiveserver3，hue，sentry所在的机器上创建group（命令行操作）</span><br><span class="line">- useradd group_name</span><br><span class="line"></span><br><span class="line">4）在hue中为hive创建role（可在impala或hive的Edit页面操作，hive用户登录）</span><br><span class="line">- create role role_name</span><br><span class="line"></span><br><span class="line">5）在hue中为某个group授予角色（可在impala或hive的Edit页面操作，hive用户登录）</span><br><span class="line">- grant role role_name to group group_name;</span><br><span class="line"></span><br><span class="line">6）在hue中为创建的role指定库、表等权限（在sentry页面操作，hive用户登录）</span><br><span class="line">7）使用第二步hue创建的用户登录，然后刷新，即可看到指定权限的库、表</span><br></pre></td></tr></table></figure>
+<h4 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h4><h5 id="hiveSQL执行add-jar失败"><a href="#hiveSQL执行add-jar失败" class="headerlink" title="hiveSQL执行add jar失败"></a>hiveSQL执行add jar失败</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hive配置了sentry后执行下面语句失败</span><br><span class="line">add jar hdfs://nameservice:8020/user/udf/phoenix-4.13.2-cdh5.11.2-hive.jar;</span><br><span class="line"></span><br><span class="line">原因：</span><br><span class="line">The ADD JAR command does not work with HiveServer2 and the Beeline client when Beeline runs on a different host.</span><br></pre></td></tr></table></figure>
+<p>解决办法：</p>
+<p><a href="https://www.cloudera.com/documentation/enterprise/5-12-x/topics/cm_mc_hive_udf.html" target="_blank" rel="noopener">cloudera官网</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">首先，只能借助hive的辅助jar来实现</span><br><span class="line">在hive配置中修改（配置项：Hive 辅助 JAR 目录）：</span><br><span class="line">hive.aux.jars.path=/data/dmp/udf</span><br><span class="line"></span><br><span class="line">hive-env.sh中添加（配置项：hive-env.sh 的 Gateway 客户端环境高级配置代码段（安全阀））：</span><br><span class="line">HIVE_AUX_JARS_PATH=/data/dmp/udf</span><br><span class="line"></span><br><span class="line">hive-site.xml中添加（配置项hive-site.xml 的 Hive 服务高级配置代码段（安全阀））：</span><br><span class="line">hive.reloadable.aux.jars.path=/data/dmp/udf</span><br><span class="line"></span><br><span class="line">然后将用的jar放的hiveserver2所在机器的/data/dmp/udf目录下</span><br><span class="line"></span><br><span class="line">之后若有新jar需要加入，直接将jar放到目录下，然后在HiveSQL中执行reload命令即可。</span><br><span class="line"></span><br><span class="line">最后在执行SQL时就不需要add jar操作</span><br></pre></td></tr></table></figure>
+<h5 id="hiveSQL执行insert-overwrite操作失败"><a href="#hiveSQL执行insert-overwrite操作失败" class="headerlink" title="hiveSQL执行insert overwrite操作失败"></a>hiveSQL执行insert overwrite操作失败</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ERROR : Failed with exception Directory hdfs://nameservice/user/hive/warehouse/prod.db/ods_hive_recommend_item_topic_nd could not be cleaned up.</span><br><span class="line">19-03-2019 14:11:17 CST ods_hive_recommend_item_topic_nd </span><br><span class="line">Directory hdfs://nameservice/user/hive/warehouse/prod.db/ods_hive_recommend_item_topic_nd could not be cleaned up.</span><br><span class="line"></span><br><span class="line">... ...</span><br><span class="line"></span><br><span class="line">Caused by: java.io.IOException: java.util.concurrent.ExecutionException: org.apache.hadoop.security.AccessControlException: Permission denied by sticky bit: </span><br><span class="line">user=hive, path=&quot;/user/hive/warehouse/prod.db/ods_hive_recommend_item_topic_nd/000000_0&quot;:impala:hive:-rwxrwxrwt, parent=&quot;/user/hive/warehouse/prod.db/ods_hive_recommend_item_topic_nd&quot;:impala:hive:drwxrwxrwt</span><br></pre></td></tr></table></figure>
+<p>发现如下信息:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Permission denied by sticky bit: user=hive,</span><br><span class="line"></span><br><span class="line">由于sticky bit导致的错误:</span><br><span class="line"># sticky bit</span><br><span class="line">不同于suid, guid，对于others的execute权限位，则可以设置sticky bit标志，</span><br><span class="line">用t来表示，如果该位置本来就有可执行权限位，即x，则t和x叠加后用大写的T来表示。</span><br><span class="line"></span><br><span class="line">sticky bit只对目录起作用，如果一个目录设置了sticky bit，则该目录下的文件只能被</span><br><span class="line">该文件的owner或者root删除，其他用户即使有删除权限也无法删除该文件。</span><br><span class="line"></span><br><span class="line">-rwxrwxrwt   3 hdfs hive        636 2018-11-06 10:19 /user/hive/xxxx/000000_0</span><br><span class="line">-rwxrwxrwt   3 hdfs hive        635 2018-11-06 10:19 /user/hive/xxxx/000001_0</span><br></pre></td></tr></table></figure>
+<p>解决办法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">将sticky bit配置给移除:</span><br><span class="line"></span><br><span class="line">hadoop fs -chmod -R -t /user/hive/xxxx/</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/hue/">hue</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hue/" rel="tag">hue</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sentry/" rel="tag">sentry</a></li></ul>
+
+            
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/05/08/2019050801-QCon2019%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84%E7%9B%B8%E5%85%B3%E6%80%BB%E7%BB%93/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          QCon2019大数据平台架构相关总结
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/02/14/2019021401-HDFS%E5%92%8CYarn%E5%90%8C%E6%97%B6%E9%87%8D%E5%90%AF%E5%AF%B9Flink%20on%20Yarn%E4%BB%BB%E5%8A%A1%E7%9A%84%E5%BD%B1%E5%93%8D/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">HDFS和Yarn同时重启对Flink on Yarn任务的影响</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hue%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">Hue简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Hue%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">Hue是什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Hue%E8%83%BD%E5%B9%B2%E4%BB%80%E4%B9%88"><span class="nav-number">1.2.</span> <span class="nav-text">Hue能干什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Hue%E6%9C%89%E5%93%AA%E4%BA%9B%E4%B8%8D%E8%B6%B3"><span class="nav-number">1.3.</span> <span class="nav-text">Hue有哪些不足</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sentry%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">Sentry简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Sentry%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">2.1.</span> <span class="nav-text">Sentry是什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Sentry%E8%83%BD%E5%B9%B2%E4%BB%80%E4%B9%88"><span class="nav-number">2.2.</span> <span class="nav-text">Sentry能干什么</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8ESentry%E5%92%8CHue%E5%AF%B9%E6%95%B0%E4%BB%93%E8%A1%A8%E5%81%9A%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">基于Sentry和Hue对数仓表做权限管理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4"><span class="nav-number">3.1.</span> <span class="nav-text">安装步骤</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE"><span class="nav-number">3.2.</span> <span class="nav-text">权限配置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9Hive%E7%9A%84Sentry%E9%85%8D%E7%BD%AE"><span class="nav-number">3.2.1.</span> <span class="nav-text">修改Hive的Sentry配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9Impala%E7%9A%84Sentry%E9%85%8D%E7%BD%AE"><span class="nav-number">3.2.2.</span> <span class="nav-text">修改Impala的Sentry配置</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9Hue%E7%9A%84Sentry%E9%85%8D%E7%BD%AE"><span class="nav-number">3.3.</span> <span class="nav-text">修改Hue的Sentry配置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#hive%E8%A7%92%E8%89%B2%E3%80%81%E7%94%A8%E6%88%B7%E7%BB%84%E5%92%8CHue%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">3.3.1.</span> <span class="nav-text">hive角色、用户组和Hue的区别</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE-1"><span class="nav-number">3.3.2.</span> <span class="nav-text">权限配置</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">3.4.</span> <span class="nav-text">遇到的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#hiveSQL%E6%89%A7%E8%A1%8Cadd-jar%E5%A4%B1%E8%B4%A5"><span class="nav-number">3.4.1.</span> <span class="nav-text">hiveSQL执行add jar失败</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#hiveSQL%E6%89%A7%E8%A1%8Cinsert-overwrite%E6%93%8D%E4%BD%9C%E5%A4%B1%E8%B4%A5"><span class="nav-number">3.4.2.</span> <span class="nav-text">hiveSQL执行insert overwrite操作失败</span></a></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+      <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2020 GuoYL&#39;s Notes All Rights Reserved.
+          
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hiero" target="_blank">hiero</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var contentdiv = document.getElementById("content");
+
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+</script>
+
+<!-- Custome JS -->
+
+<script src="/js/my.js"></script>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>

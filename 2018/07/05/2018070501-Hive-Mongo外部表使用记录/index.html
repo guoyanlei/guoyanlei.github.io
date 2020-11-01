@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  
+  <title>hive-mongo外部表使用记录 | GuoYL&#39;s Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="hivemongodb" />
+  
+  
+  
+  
+  <meta name="description" content="统计需求需要在数据仓库中统计业务系统的数据，而这些数据存储在mongodb中，如何获取mongo中的数据并统计呢？下面记录下官网所提供的mongo-hadoop-hive方式来获取mongo中的数据。 官方：https:&#x2F;&#x2F;github.com&#x2F;mongodb&#x2F;mongo-hadoop&#x2F;wiki&#x2F;Hive-Usage">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive-Mongo外部表使用记录">
+<meta property="og:url" content="http://guoyanlei.top/2018/07/05/2018070501-Hive-Mongo%E5%A4%96%E9%83%A8%E8%A1%A8%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="GuoYL&#39;s Notes">
+<meta property="og:description" content="统计需求需要在数据仓库中统计业务系统的数据，而这些数据存储在mongodb中，如何获取mongo中的数据并统计呢？下面记录下官网所提供的mongo-hadoop-hive方式来获取mongo中的数据。 官方：https:&#x2F;&#x2F;github.com&#x2F;mongodb&#x2F;mongo-hadoop&#x2F;wiki&#x2F;Hive-Usage">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-07-05T07:30:00.000Z">
+<meta property="article:modified_time" content="2018-07-06T14:40:50.630Z">
+<meta property="article:author" content="Guo Yanlei">
+<meta property="article:tag" content="hive">
+<meta property="article:tag" content="mongodb">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="GuoYL&#39;s Notes" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/hiero.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+  <!-- Custom CSS -->
+  
+<link rel="stylesheet" href="/css/my.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<script>
+var themeMenus = {};
+
+  themeMenus["/"] = "首页"; 
+
+  themeMenus["/archives"] = "归档"; 
+
+  themeMenus["/categories"] = "分类"; 
+
+  themeMenus["/tags"] = "标签"; 
+
+  themeMenus["/about"] = "关于"; 
+
+</script>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  <header id="allheader" class="site-header" role="banner">
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="GuoYL&#39;s Notes" rel="home"> GuoYL&#39;s Notes </a>
+            
+          </h1>
+
+          
+            <div class="site-description">大志非才不就，大才非学不成</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+            <div class="clearfix sf-menu">
+
+              <ul id="main-nav" class="nmenu sf-js-enabled">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+
+      </div>
+  </div>
+</header>
+
+
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-2018070501-Hive-Mongo外部表使用记录" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Hive-Mongo外部表使用记录
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	Posted on <a href="/2018/07/05/2018070501-Hive-Mongo%E5%A4%96%E9%83%A8%E8%A1%A8%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/" class="article-date">
+	  <time datetime="2018-07-05T07:30:00.000Z" itemprop="datePublished">七月 5, 2018</time>
+	</a>
+
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="统计需求"><a href="#统计需求" class="headerlink" title="统计需求"></a>统计需求</h3><p>需要在数据仓库中统计业务系统的数据，而这些数据存储在mongodb中，如何获取mongo中的数据并统计呢？下面记录下官网所提供的mongo-hadoop-hive方式来获取mongo中的数据。</p>
+<p>官方：<a href="https://github.com/mongodb/mongo-hadoop/wiki/Hive-Usage" target="_blank" rel="noopener">https://github.com/mongodb/mongo-hadoop/wiki/Hive-Usage</a></p>
+<a id="more"></a>
+<h3 id="hive-mongo外部表"><a href="#hive-mongo外部表" class="headerlink" title="hive-mongo外部表"></a>hive-mongo外部表</h3><p>使用MongoStorageHandler实现hive-mongo外部表的映射，建表语句如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">use business;</span><br><span class="line">add jar hdfs://nameservice:8020/user/udf/mongo-hadoop-hive-1.5.1.jar;</span><br><span class="line">add jar hdfs://nameservice:8020/user/udf/mongo-hadoop-core-1.5.1.jar;</span><br><span class="line">add jar hdfs://nameservice:8020/user/udf/mongo-java-driver-3.2.2.jar;</span><br><span class="line">create external table ods_dim_mongodb_volunteer_stat_info</span><br><span class="line">(</span><br><span class="line">    id                    bigint,</span><br><span class="line">    date                  string,</span><br><span class="line">    volunteer_nums        int,</span><br><span class="line">    grap_totals           int,</span><br><span class="line">    grap_success_totals   int,</span><br><span class="line">    rescuit_success       int,</span><br><span class="line">    avg_match             double,</span><br><span class="line">    avg_new               double</span><br><span class="line">)</span><br><span class="line">STORED BY &apos;com.mongodb.hadoop.hive.MongoStorageHandler&apos;</span><br><span class="line">with SERDEPROPERTIES (&apos;mongo.columns.mapping&apos;=&apos;&#123;&quot;id&quot;:&quot;_id&quot;,&quot;date&quot;:&quot;date&quot;,&quot;volunteer_nums&quot;:&quot;volunteerNums&quot;,&quot;grap_totals&quot;:&quot;grapTotals&quot;,&quot;grap_success_totals&quot;:&quot;grapSuccessTotals&quot;,&quot;rescuit_success&quot;:&quot;rescuitSuccess&quot;,&quot;avg_match&quot;:&quot;avgMatch&quot;,&quot;avg_new&quot;:&quot;avgNew&quot;&#125;&apos;)</span><br><span class="line">TBLPROPERTIES (</span><br><span class="line">    &apos;mongo.uri&apos;=&apos;mongodb://&#123;username&#125;:&#123;password&#125;@&#123;hostname&#125;:27017/&#123;db&#125;.&#123;collection&#125;&apos;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h3 id="添加splitVector权限"><a href="#添加splitVector权限" class="headerlink" title="添加splitVector权限"></a>添加splitVector权限</h3><p>创建外部表完毕后，在hive上进行查询时，报错如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">not authorized on certificate to execute command </span><br><span class="line">&#123; splitVector: &quot;certificate.certificate.access_log_test&quot;, </span><br><span class="line">  keyPattern: &#123; _id: 1 &#125;, </span><br><span class="line">  min: &#123;&#125;, </span><br><span class="line">  max: &#123;&#125;, </span><br><span class="line">  force: false, </span><br><span class="line">  maxChunkSize: 8 </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="分析原因"><a href="#分析原因" class="headerlink" title="分析原因"></a>分析原因</h4><ul>
+<li>线上mongo使用分片</li>
+<li>hive MongoStorageHandler 在拆分非分片集合时需要splitVector命令的，该命令仅限于管理员用户。mongo.input.split.create_input_splits的默认设置是true，也就是会对数据进行拆分，根据集群数，cpu核数然后将数据进行拆分成多个InputSplits,以允许Hadoop并行处理，也就是说，Hadoop为每个映射器分配一个InputSplits。</li>
+</ul>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>没有splitVector权限，则需要为该用户加上该权限</p>
+<p>首先添加一个新role，并给予splitVector权限，之后把这个role分配至指定的user上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"># 添加角色</span><br><span class="line">db.createRole(</span><br><span class="line">    &#123;</span><br><span class="line">        role: &quot;hadoopSplitVector&quot;,</span><br><span class="line">        privileges: [</span><br><span class="line">            &#123;</span><br><span class="line">                resource: &#123;</span><br><span class="line">                    db: &quot;&#123;db&#125;&quot;,</span><br><span class="line">                    collection: &quot;&#123;collection&#125;&quot;</span><br><span class="line">                &#125;,</span><br><span class="line">                actions: [</span><br><span class="line">                    &quot;splitVector&quot;</span><br><span class="line">                ]</span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        roles:[]</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"># 若需要对一个新的colletion添加splitVector权限，则只需更新角色即可</span><br><span class="line">db.updateRole(</span><br><span class="line">    &quot;hadoopSplitVector&quot;,</span><br><span class="line">    &#123;</span><br><span class="line">        privileges: [</span><br><span class="line">            &#123;</span><br><span class="line">                resource: &#123;</span><br><span class="line">                    db: &quot;suishen_lizhi&quot;,</span><br><span class="line">                    collection: &quot;wltt_invite_stats&quot;</span><br><span class="line">                &#125;,</span><br><span class="line">                actions: [</span><br><span class="line">                    &quot;splitVector&quot;</span><br><span class="line">                ]</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                resource: &#123;</span><br><span class="line">                    db: &quot;suishen_lizhi&quot;,</span><br><span class="line">                    collection: &quot;volunteer_stat_info&quot;</span><br><span class="line">                &#125;,</span><br><span class="line">                actions: [</span><br><span class="line">                    &quot;splitVector&quot;</span><br><span class="line">                ]</span><br><span class="line">            &#125;,</span><br><span class="line">        ],</span><br><span class="line">        roles:[]</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"># 更新用户</span><br><span class="line">db.updateUser(</span><br><span class="line">    &quot;dmp&quot;,</span><br><span class="line">    &#123;</span><br><span class="line">        roles: [</span><br><span class="line">            &#123;</span><br><span class="line">                role:&quot;read&quot;,</span><br><span class="line">                db:&quot;&#123;db&#125;&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                role:&quot;hadoopSplitVector&quot;,</span><br><span class="line">                db:&quot;&#123;db&#125;&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"># 若没有可用户用户可以创建一个只读用户</span><br><span class="line">db.createUser(</span><br><span class="line">    &#123;</span><br><span class="line">        user: &quot;xxx&quot;,</span><br><span class="line">        pwd: &quot;xxx&quot;,</span><br><span class="line">        roles: [ </span><br><span class="line">            &#123; </span><br><span class="line">                role: &quot;read&quot;, </span><br><span class="line">                db: &quot;&#123;db&#125;&quot; </span><br><span class="line">            &#125; </span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>注：上面添加更新用户、角色都需要较高权限的用户进行操作。</p>
+<p>至此，已经可以使用外部表来查询mongo中的数据了。</p>
+<h3 id="查Mongo时’-’的坑"><a href="#查Mongo时’-’的坑" class="headerlink" title="查Mongo时’=’的坑"></a>查Mongo时’=’的坑</h3><p>在使用外部表查询mongo时，在条件中使用 where app = ‘zhwnl’，发现查询的结果包含了其他的app，并不是我们限制的查询条件，这是因为MongoStorageHandler并没有将我们的’=’转成mongo中的’$.eq’。</p>
+<p>但是，我们可以’like’来解决，功能和’=’等同。</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/hive/">hive</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hive/" rel="tag">hive</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a></li></ul>
+
+            
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/07/18/2018071801-%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E5%9C%A8%E5%85%AC%E5%8F%B8%E7%9A%84%E5%BA%94%E7%94%A8%E4%B8%8E%E6%BC%94%E5%8F%98/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          分布式数据仓库在公司的应用与演变
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/03/2018070301-Impala%E5%8A%A8%E6%80%81%E8%A7%86%E5%9B%BE%E5%9C%A8%E5%8D%B3%E5%B8%AD%E6%9F%A5%E8%AF%A2%E4%B8%AD%E7%9A%84%E5%A6%99%E7%94%A8/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Impala动态视图在即席查询中的妙用</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%9F%E8%AE%A1%E9%9C%80%E6%B1%82"><span class="nav-number">1.</span> <span class="nav-text">统计需求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hive-mongo%E5%A4%96%E9%83%A8%E8%A1%A8"><span class="nav-number">2.</span> <span class="nav-text">hive-mongo外部表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0splitVector%E6%9D%83%E9%99%90"><span class="nav-number">3.</span> <span class="nav-text">添加splitVector权限</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E5%8E%9F%E5%9B%A0"><span class="nav-number">3.1.</span> <span class="nav-text">分析原因</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">3.2.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5Mongo%E6%97%B6%E2%80%99-%E2%80%99%E7%9A%84%E5%9D%91"><span class="nav-number">4.</span> <span class="nav-text">查Mongo时’&#x3D;’的坑</span></a></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+      <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2020 GuoYL&#39;s Notes All Rights Reserved.
+          
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hiero" target="_blank">hiero</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var contentdiv = document.getElementById("content");
+
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+</script>
+
+<!-- Custome JS -->
+
+<script src="/js/my.js"></script>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>

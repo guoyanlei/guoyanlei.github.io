@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  
+  <title>hdfs和yarn同时重启对flink on yarn任务的影响 | GuoYL&#39;s Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="kafkaflink" />
+  
+  
+  
+  
+  <meta name="description" content="HDFS和Yarn同时重启对Flink on Yarn任务的影响现象部分consumer的topic partition出现从Earlist开始消费的问题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HDFS和Yarn同时重启对Flink on Yarn任务的影响">
+<meta property="og:url" content="http://guoyanlei.top/2019/02/14/2019021401-HDFS%E5%92%8CYarn%E5%90%8C%E6%97%B6%E9%87%8D%E5%90%AF%E5%AF%B9Flink%20on%20Yarn%E4%BB%BB%E5%8A%A1%E7%9A%84%E5%BD%B1%E5%93%8D/index.html">
+<meta property="og:site_name" content="GuoYL&#39;s Notes">
+<meta property="og:description" content="HDFS和Yarn同时重启对Flink on Yarn任务的影响现象部分consumer的topic partition出现从Earlist开始消费的问题">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-02-14T07:30:00.000Z">
+<meta property="article:modified_time" content="2019-02-14T10:09:04.927Z">
+<meta property="article:author" content="Guo Yanlei">
+<meta property="article:tag" content="kafka">
+<meta property="article:tag" content="flink">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="GuoYL&#39;s Notes" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/hiero.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+  <!-- Custom CSS -->
+  
+<link rel="stylesheet" href="/css/my.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<script>
+var themeMenus = {};
+
+  themeMenus["/"] = "首页"; 
+
+  themeMenus["/archives"] = "归档"; 
+
+  themeMenus["/categories"] = "分类"; 
+
+  themeMenus["/tags"] = "标签"; 
+
+  themeMenus["/about"] = "关于"; 
+
+</script>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  <header id="allheader" class="site-header" role="banner">
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="GuoYL&#39;s Notes" rel="home"> GuoYL&#39;s Notes </a>
+            
+          </h1>
+
+          
+            <div class="site-description">大志非才不就，大才非学不成</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+            <div class="clearfix sf-menu">
+
+              <ul id="main-nav" class="nmenu sf-js-enabled">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+
+      </div>
+  </div>
+</header>
+
+
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-2019021401-HDFS和Yarn同时重启对Flink on Yarn任务的影响" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      HDFS和Yarn同时重启对Flink on Yarn任务的影响
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	Posted on <a href="/2019/02/14/2019021401-HDFS%E5%92%8CYarn%E5%90%8C%E6%97%B6%E9%87%8D%E5%90%AF%E5%AF%B9Flink%20on%20Yarn%E4%BB%BB%E5%8A%A1%E7%9A%84%E5%BD%B1%E5%93%8D/" class="article-date">
+	  <time datetime="2019-02-14T07:30:00.000Z" itemprop="datePublished">二月 14, 2019</time>
+	</a>
+
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="HDFS和Yarn同时重启对Flink-on-Yarn任务的影响"><a href="#HDFS和Yarn同时重启对Flink-on-Yarn任务的影响" class="headerlink" title="HDFS和Yarn同时重启对Flink on Yarn任务的影响"></a>HDFS和Yarn同时重启对Flink on Yarn任务的影响</h3><h4 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h4><p>部分consumer的topic partition出现从Earlist开始消费的问题</p>
+<a id="more"></a>
+<h4 id="官网上"><a href="#官网上" class="headerlink" title="官网上"></a>官网上</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1. If offsets could not be found for a partition, the auto.offset.reset setting in the properties will be used.</span><br><span class="line"></span><br><span class="line">2. Flink Kafka Consumer Offset提交行为配置:</span><br><span class="line">Flink Kafka Consumer允许配置offset提交回Kafka brokers(Kafka 0.8是写回Zookeeper)的行为，注意Flink Kafka Consumer 并不依赖于这个提交的offset来进行容错性保证，这个提交的offset仅仅作为监控consumer处理进度的一种手段。</span><br><span class="line"></span><br><span class="line">配置offset提交行为的方式有多种，主要取决于Job的checkpoint机制是否启动。</span><br><span class="line">　　1）checkpoint禁用:如果checkpoint禁用，Flink Kafka Consumer依赖于Kafka 客户端内部的自动周期性offset提交能力。因此，为了启用或者禁用offset提交，仅需在给定的Properties配置中设置enable.auto.commit(Kafka 0.8是auto.commit.enable)/auto.commit.interval.ms为适当的值即可。</span><br><span class="line">　　2）checkpoint启用:如果checkpoint启用，当checkpoint完成之后，Flink Kafka Consumer将会提交offset保存到checkpoint State中，这就保证了kafka broker中的committed offset与 checkpoint stata中的offset相一致。用户可以在Consumer中调用setCommitOffsetsOnCheckpoints(boolean) 方法来选择启用或者禁用offset committing(默认情况下是启用的)。注意，在这种情况下，配置在Properties中的自动周期性offset提交将会被完全忽略。</span><br></pre></td></tr></table></figure>
+<h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>flink消费kafka的topic，为保证容错性，对offset的管理是通常是基于checkpoint机制的。</p>
+<p>关于checkpoint存储offset机制可以参考<a href="https://www.ververica.com/blog/how-apache-flink-manages-kafka-consumer-offsets" target="_blank" rel="noopener">这篇文章</a>，<a href="http://wuchong.me/blog/2018/11/04/how-apache-flink-manages-kafka-consumer-offsets/" target="_blank" rel="noopener">中文可参考</a></p>
+<p>而checkpoint状态保存在HDFS上，当HDFS重启时，checkpoint状态存在保存失败的问题，当yarn重启后，yarn会自动将flink任务重启，重启时从checkpoint开始恢复，但是存在故障的checkpoint，导致上述问题（If offsets could not be found for a partition, the auto.offset.reset setting in the properties will be used）。</p>
+<h4 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h4><p>flink-connector-kafka目前已有kafka 0.8、0.9、0.10、0.11四个版本的实现，本文分析的是FlinkKafkaConsumer011版本代码。</p>
+<p>FlinkKafkaConsumer011类的父类继承关系如下，FlinkKafkaConsumerBase包含了大多数实现。</p>
+<p>FlinkKafkaConsumer011<t> extends FlinkKafkaConsumer010<t> extends FlinkKafkaConsumer09<t> extends FlinkKafkaConsumerBase<t></t></t></t></t></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">FlinkKafkaConsumerBase</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">RichParallelSourceFunction</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span></span></span><br><span class="line"><span class="class">		<span class="title">CheckpointListener</span>,</span></span><br><span class="line"><span class="class">		<span class="title">ResultTypeQueryable</span>&lt;<span class="title">T</span>&gt;,</span></span><br><span class="line"><span class="class">		<span class="title">CheckpointedFunction</span> </span>&#123;</span><br></pre></td></tr></table></figure>
+<p>FlinkKafkaConsumerBase的内部实现分析：</p>
+<ol>
+<li>initializeState方法会在flinkkafkaconusmer初始化的时候最先调用</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">方法通过运行时上下文FunctionSnapshotContext调用getOperatorStateStore和getSerializableListState拿到了checkpoint里面的state对象</span><br><span class="line">如果这个task是从失败等过程中恢复的，context.isRestored()会被判定为<span class="keyword">true</span></span><br><span class="line">程序会试图从flink checkpoint里获取原来分配到的kafka partition以及最后提交完成的offset。</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">initializeState</span><span class="params">(FunctionInitializationContext context)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">	OperatorStateStore stateStore = context.getOperatorStateStore();</span><br><span class="line"></span><br><span class="line">	ListState&lt;Tuple2&lt;KafkaTopicPartition, Long&gt;&gt; oldRoundRobinListState =</span><br><span class="line">		stateStore.getSerializableListState(DefaultOperatorStateBackend.DEFAULT_OPERATOR_STATE_NAME);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">this</span>.unionOffsetStates = stateStore.getUnionListState(<span class="keyword">new</span> ListStateDescriptor&lt;&gt;(</span><br><span class="line">			OFFSETS_STATE_NAME,</span><br><span class="line">			TypeInformation.of(<span class="keyword">new</span> TypeHint&lt;Tuple2&lt;KafkaTopicPartition, Long&gt;&gt;() &#123;&#125;)));</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (context.isRestored() &amp;&amp; !restoredFromOldState) &#123;</span><br><span class="line">		restoredState = <span class="keyword">new</span> TreeMap&lt;&gt;(<span class="keyword">new</span> KafkaTopicPartition.Comparator());</span><br><span class="line"></span><br><span class="line">		<span class="comment">// migrate from 1.2 state, if there is any</span></span><br><span class="line">		<span class="keyword">for</span> (Tuple2&lt;KafkaTopicPartition, Long&gt; kafkaOffset : oldRoundRobinListState.get()) &#123;</span><br><span class="line">			restoredFromOldState = <span class="keyword">true</span>;</span><br><span class="line">			unionOffsetStates.add(kafkaOffset);</span><br><span class="line">		&#125;</span><br><span class="line">		oldRoundRobinListState.clear();</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (restoredFromOldState &amp;&amp; discoveryIntervalMillis != PARTITION_DISCOVERY_DISABLED) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(</span><br><span class="line">				<span class="string">"Topic / partition discovery cannot be enabled if the job is restored from a savepoint from Flink 1.2.x."</span>);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// populate actual holder for restored state</span></span><br><span class="line">		<span class="keyword">for</span> (Tuple2&lt;KafkaTopicPartition, Long&gt; kafkaOffset : unionOffsetStates.get()) &#123;</span><br><span class="line">			restoredState.put(kafkaOffset.f0, kafkaOffset.f1);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		LOG.info(<span class="string">"Setting restore state in the FlinkKafkaConsumer: &#123;&#125;"</span>, restoredState);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		LOG.info(<span class="string">"No restore state for FlinkKafkaConsumer."</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>open方法会在initializeState技术后调用，主要逻辑分为几个步骤</li>
+</ol>
+<ul>
+<li>判断offsetCommitMode。根据kafka的auto commit ，setCommitOffsetsOnCheckpoints()的值（默认为true）以及flink运行时有没有开启checkpoint三个参数的组合，offsetCommitMode共有三种模式：<ul>
+<li>ON_CHECKPOINTS  checkpoint结束后提交offset；</li>
+<li>KAFKA_PERIODIC kafkaconsumer自带的定期提交功能；</li>
+<li>DISABLED 不提交</li>
+</ul>
+</li>
+<li>创建分区发现者</li>
+<li>判断是否从checkpoint状态恢复，若是，则从状态中读取各partition的offset；若否，则根据启动模式来设定offset<ul>
+<li>SPECIFIC_OFFSETS 和 TIMESTAMP 两个模式直接设置好</li>
+<li>其他的模式（EARLIEST, LATEST 和 GROUP_OFFSETS），会在后面真正读partition数据时设置</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">(Configuration configuration)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	<span class="comment">// determine the offset commit mode（判断offsetCommitMode）</span></span><br><span class="line">	<span class="keyword">this</span>.offsetCommitMode = OffsetCommitModes.fromConfiguration(</span><br><span class="line">			getIsAutoCommitEnabled(),</span><br><span class="line">			enableCommitOnCheckpoints,</span><br><span class="line">			((StreamingRuntimeContext) getRuntimeContext()).isCheckpointingEnabled());</span><br><span class="line"></span><br><span class="line">	<span class="comment">// create the partition discoverer（创建分区发现者）</span></span><br><span class="line">	<span class="keyword">this</span>.partitionDiscoverer = createPartitionDiscoverer(</span><br><span class="line">			topicsDescriptor,</span><br><span class="line">			getRuntimeContext().getIndexOfThisSubtask(),</span><br><span class="line">			getRuntimeContext().getNumberOfParallelSubtasks());</span><br><span class="line">	<span class="keyword">this</span>.partitionDiscoverer.open();</span><br><span class="line"></span><br><span class="line">	subscribedPartitionsToStartOffsets = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">	List&lt;KafkaTopicPartition&gt; allPartitions = partitionDiscoverer.discoverPartitions();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//判断是否从checkpoint状态恢复</span></span><br><span class="line">	<span class="keyword">if</span> (restoredState != <span class="keyword">null</span>) &#123; <span class="comment">// 是</span></span><br><span class="line">		<span class="keyword">for</span> (KafkaTopicPartition partition : allPartitions) &#123; <span class="comment">// 从状态中恢复</span></span><br><span class="line">			<span class="keyword">if</span> (!restoredState.containsKey(partition)) &#123; <span class="comment">//状态中没有当前分区，则从ERALIST开始消费</span></span><br><span class="line">				restoredState.put(partition, KafkaTopicPartitionStateSentinel.EARLIEST_OFFSET);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">for</span> (Map.Entry&lt;KafkaTopicPartition, Long&gt; restoredStateEntry : restoredState.entrySet()) &#123;</span><br><span class="line">			<span class="keyword">if</span> (!restoredFromOldState) &#123;</span><br><span class="line">				<span class="comment">// seed the partition discoverer with the union state while filtering out</span></span><br><span class="line">				<span class="comment">// restored partitions that should not be subscribed by this subtask</span></span><br><span class="line">				<span class="keyword">if</span> (KafkaTopicPartitionAssigner.assign(</span><br><span class="line">					restoredStateEntry.getKey(), getRuntimeContext().getNumberOfParallelSubtasks())</span><br><span class="line">						== getRuntimeContext().getIndexOfThisSubtask())&#123;</span><br><span class="line">					subscribedPartitionsToStartOffsets.put(restoredStateEntry.getKey(), restoredStateEntry.getValue());</span><br><span class="line">				&#125;</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="comment">// when restoring from older 1.1 / 1.2 state, the restored state would not be the union state;</span></span><br><span class="line">				<span class="comment">// in this case, just use the restored state as the subscribed partitions</span></span><br><span class="line">				subscribedPartitionsToStartOffsets.put(restoredStateEntry.getKey(), restoredStateEntry.getValue());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		LOG.info(<span class="string">"Consumer subtask &#123;&#125; will start reading &#123;&#125; partitions with offsets in restored state: &#123;&#125;"</span>,</span><br><span class="line">			getRuntimeContext().getIndexOfThisSubtask(), subscribedPartitionsToStartOffsets.size(), subscribedPartitionsToStartOffsets);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;  <span class="comment">// 否</span></span><br><span class="line">		<span class="comment">// use the partition discoverer to fetch the initial seed partitions,</span></span><br><span class="line">		<span class="comment">// and set their initial offsets depending on the startup mode.</span></span><br><span class="line">		<span class="comment">// for SPECIFIC_OFFSETS and TIMESTAMP modes, we set the specific offsets now;</span></span><br><span class="line">		<span class="comment">// for other modes (EARLIEST, LATEST, and GROUP_OFFSETS), the offset is lazily determined</span></span><br><span class="line">		<span class="comment">// when the partition is actually read.</span></span><br><span class="line">		<span class="keyword">switch</span> (startupMode) &#123;  <span class="comment">//启动模式</span></span><br><span class="line">			<span class="keyword">case</span> SPECIFIC_OFFSETS: <span class="comment">//指定offset开始消费</span></span><br><span class="line">				<span class="keyword">if</span> (specificStartupOffsets == <span class="keyword">null</span>) &#123;</span><br><span class="line">					<span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(</span><br><span class="line">						<span class="string">"Startup mode for the consumer set to "</span> + StartupMode.SPECIFIC_OFFSETS +</span><br><span class="line">							<span class="string">", but no specific offsets were specified."</span>);</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">				<span class="keyword">for</span> (KafkaTopicPartition seedPartition : allPartitions) &#123;</span><br><span class="line">					Long specificOffset = specificStartupOffsets.get(seedPartition);</span><br><span class="line">					<span class="keyword">if</span> (specificOffset != <span class="keyword">null</span>) &#123;</span><br><span class="line">						<span class="comment">// since the specified offsets represent the next record to read, we subtract</span></span><br><span class="line">						<span class="comment">// it by one so that the initial state of the consumer will be correct</span></span><br><span class="line">						subscribedPartitionsToStartOffsets.put(seedPartition, specificOffset - <span class="number">1</span>);</span><br><span class="line">					&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">						<span class="comment">// default to group offset behaviour if the user-provided specific offsets</span></span><br><span class="line">						<span class="comment">// do not contain a value for this partition</span></span><br><span class="line">						subscribedPartitionsToStartOffsets.put(seedPartition, KafkaTopicPartitionStateSentinel.GROUP_OFFSET);</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			<span class="keyword">case</span> TIMESTAMP: <span class="comment">//指定produce时间戳开始消费</span></span><br><span class="line">				<span class="keyword">if</span> (startupOffsetsTimestamp == <span class="keyword">null</span>) &#123;</span><br><span class="line">					<span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(</span><br><span class="line">						<span class="string">"Startup mode for the consumer set to "</span> + StartupMode.TIMESTAMP +</span><br><span class="line">							<span class="string">", but no startup timestamp was specified."</span>);</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">				<span class="keyword">for</span> (Map.Entry&lt;KafkaTopicPartition, Long&gt; partitionToOffset</span><br><span class="line">						: fetchOffsetsWithTimestamp(allPartitions, startupOffsetsTimestamp).entrySet()) &#123;</span><br><span class="line">					subscribedPartitionsToStartOffsets.put(</span><br><span class="line">						partitionToOffset.getKey(),</span><br><span class="line">						(partitionToOffset.getValue() == <span class="keyword">null</span>)</span><br><span class="line">								<span class="comment">// if an offset cannot be retrieved for a partition with the given timestamp,</span></span><br><span class="line">								<span class="comment">// we default to using the latest offset for the partition</span></span><br><span class="line">								? KafkaTopicPartitionStateSentinel.LATEST_OFFSET</span><br><span class="line">								<span class="comment">// since the specified offsets represent the next record to read, we subtract</span></span><br><span class="line">								<span class="comment">// it by one so that the initial state of the consumer will be correct</span></span><br><span class="line">								: partitionToOffset.getValue() - <span class="number">1</span>);</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			<span class="keyword">default</span>:</span><br><span class="line">				<span class="keyword">for</span> (KafkaTopicPartition seedPartition : allPartitions) &#123;</span><br><span class="line">					subscribedPartitionsToStartOffsets.put(seedPartition, startupMode.getStateSentinel());</span><br><span class="line">				&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (!subscribedPartitionsToStartOffsets.isEmpty()) &#123;</span><br><span class="line">			<span class="keyword">switch</span> (startupMode) &#123;</span><br><span class="line">				<span class="keyword">case</span> EARLIEST:</span><br><span class="line">					LOG.info(<span class="string">"Consumer subtask &#123;&#125; will start reading the following &#123;&#125; partitions from the earliest offsets: &#123;&#125;"</span>,</span><br><span class="line">						getRuntimeContext().getIndexOfThisSubtask(),</span><br><span class="line">						subscribedPartitionsToStartOffsets.size(),</span><br><span class="line">						subscribedPartitionsToStartOffsets.keySet());</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				<span class="keyword">case</span> LATEST:</span><br><span class="line">					LOG.info(<span class="string">"Consumer subtask &#123;&#125; will start reading the following &#123;&#125; partitions from the latest offsets: &#123;&#125;"</span>,</span><br><span class="line">						getRuntimeContext().getIndexOfThisSubtask(),</span><br><span class="line">						subscribedPartitionsToStartOffsets.size(),</span><br><span class="line">						subscribedPartitionsToStartOffsets.keySet());</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				<span class="keyword">case</span> TIMESTAMP:</span><br><span class="line">					LOG.info(<span class="string">"Consumer subtask &#123;&#125; will start reading the following &#123;&#125; partitions from timestamp &#123;&#125;: &#123;&#125;"</span>,</span><br><span class="line">						getRuntimeContext().getIndexOfThisSubtask(),</span><br><span class="line">						subscribedPartitionsToStartOffsets.size(),</span><br><span class="line">						startupOffsetsTimestamp,</span><br><span class="line">						subscribedPartitionsToStartOffsets.keySet());</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				<span class="keyword">case</span> SPECIFIC_OFFSETS:</span><br><span class="line">					LOG.info(<span class="string">"Consumer subtask &#123;&#125; will start reading the following &#123;&#125; partitions from the specified startup offsets &#123;&#125;: &#123;&#125;"</span>,</span><br><span class="line">						getRuntimeContext().getIndexOfThisSubtask(),</span><br><span class="line">						subscribedPartitionsToStartOffsets.size(),</span><br><span class="line">						specificStartupOffsets,</span><br><span class="line">						subscribedPartitionsToStartOffsets.keySet());</span><br><span class="line"></span><br><span class="line">					List&lt;KafkaTopicPartition&gt; partitionsDefaultedToGroupOffsets = <span class="keyword">new</span> ArrayList&lt;&gt;(subscribedPartitionsToStartOffsets.size());</span><br><span class="line">					<span class="keyword">for</span> (Map.Entry&lt;KafkaTopicPartition, Long&gt; subscribedPartition : subscribedPartitionsToStartOffsets.entrySet()) &#123;</span><br><span class="line">						<span class="keyword">if</span> (subscribedPartition.getValue() == KafkaTopicPartitionStateSentinel.GROUP_OFFSET) &#123;</span><br><span class="line">							partitionsDefaultedToGroupOffsets.add(subscribedPartition.getKey());</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line"></span><br><span class="line">					<span class="keyword">if</span> (partitionsDefaultedToGroupOffsets.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">						LOG.warn(<span class="string">"Consumer subtask &#123;&#125; cannot find offsets for the following &#123;&#125; partitions in the specified startup offsets: &#123;&#125;"</span> +</span><br><span class="line">								<span class="string">"; their startup offsets will be defaulted to their committed group offsets in Kafka."</span>,</span><br><span class="line">							getRuntimeContext().getIndexOfThisSubtask(),</span><br><span class="line">							partitionsDefaultedToGroupOffsets.size(),</span><br><span class="line">							partitionsDefaultedToGroupOffsets);</span><br><span class="line">					&#125;</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				<span class="keyword">default</span>:</span><br><span class="line">				<span class="keyword">case</span> GROUP_OFFSETS:</span><br><span class="line">					LOG.info(<span class="string">"Consumer subtask &#123;&#125; will start reading the following &#123;&#125; partitions from the committed group offsets in Kafka: &#123;&#125;"</span>,</span><br><span class="line">						getRuntimeContext().getIndexOfThisSubtask(),</span><br><span class="line">						subscribedPartitionsToStartOffsets.size(),</span><br><span class="line">						subscribedPartitionsToStartOffsets.keySet());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			LOG.info(<span class="string">"Consumer subtask &#123;&#125; initially has no partitions to read from."</span>,</span><br><span class="line">				getRuntimeContext().getIndexOfThisSubtask());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/flink/">flink</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flink/" rel="tag">flink</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li></ul>
+
+            
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/03/20/2019032001-%E5%9F%BA%E4%BA%8ESentry%E5%92%8CHue%E5%AF%B9%E6%95%B0%E4%BB%93%E8%A1%A8%E5%81%9A%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          基于Sentry和Hue对数仓表做权限管理
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/11/18/2018111801-kafka%E6%B6%88%E6%81%AF%E6%8A%95%E9%80%92%E8%AF%AD%E4%B9%89/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">kafka消息投递语义</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#HDFS%E5%92%8CYarn%E5%90%8C%E6%97%B6%E9%87%8D%E5%90%AF%E5%AF%B9Flink-on-Yarn%E4%BB%BB%E5%8A%A1%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">1.</span> <span class="nav-text">HDFS和Yarn同时重启对Flink on Yarn任务的影响</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%8E%B0%E8%B1%A1"><span class="nav-number">1.1.</span> <span class="nav-text">现象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%98%E7%BD%91%E4%B8%8A"><span class="nav-number">1.2.</span> <span class="nav-text">官网上</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">1.3.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">1.4.</span> <span class="nav-text">源码分析</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+      <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2020 GuoYL&#39;s Notes All Rights Reserved.
+          
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hiero" target="_blank">hiero</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var contentdiv = document.getElementById("content");
+
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+</script>
+
+<!-- Custome JS -->
+
+<script src="/js/my.js"></script>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>
