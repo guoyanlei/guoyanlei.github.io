@@ -154,12 +154,13 @@ Log集群：业务系统日志收集和传输的缓存介质，之后面向重�
 离线集群：是所有各种日志的最终汇聚点，一方面落地到数仓；另一方面面向次重要的实时消费和数据处理
 
 
+
 业务场景架构如下：
 
 其中，通过Mirror Service将多个在线集群和Log集群中数据汇总到离线集群
 技术演进对kafka的使用做了如下优化：
 优化一：kafka集群平滑扩容优化，解决了扩容节点时导致kafka集群物理资源大量消耗，影响producer写入
-问题：社区kafka对partition的迁移是从最初的offset开始的，触发读盘，物理资源大量消耗 =&gt; pro...
+问题：社区kafka对partition的迁移是从最初的offset开始的，触发读盘，物理资源大量消耗 =&gt; pr...
           
 
         
@@ -219,7 +220,8 @@ Log集群：业务系统日志收集和传输的缓存介质，之后面向重�
             Hue简介Hue是什么Hue是一个可快速开发和调试Hadoop生态系统各种应用的一个基于浏览器的图形化用户接口。 
 Hue是出自CDH公司，在基于CDH的大数据集群中安装和使用非常方便。
 
-Hue能干什么12345678910111213141.访问HDFS和文件浏览 2.通过web调试和开发hive以及数据结果展示 3.查询solr和结果展示，报表生成 4.通过web调试和开发impala交互式SQL Query 5.spark调试和开发 6.Pig开发和调试 7.oozie任务的开发，监控，和工作流协调调度 8.Hbase数据查询和修改，数据展示 9.Hive的元数据（metastore）查询 10.MapReduce任务进度查看，日志追踪 11.创建和提交MapReduce，St...
+
+Hue能干什么12345678910111213141.访问HDFS和文件浏览 2.通过web调试和开发hive以及数据结果展示 3.查询solr和结果展示，报表生成 4.通过web调试和开发impala交互式SQL Query 5.spark调试和开发 6.Pig开发和调试 7.oozie任务的开发，监控，和工作流协调调度 8.Hbase数据查询和修改，数据展示 9.Hive的元数据（metastore）查询 10.MapReduce任务进度查看，日志追踪 11.创建和提交MapReduce，S...
           
 
         
@@ -278,7 +280,8 @@ Hue能干什么12345678910111213141.访问HDFS和文件浏览 2.通过web调试�
             <div class="entry-summary" style="margin-left:0;">
             HDFS和Yarn同时重启对Flink on Yarn任务的影响现象部分consumer的topic partition出现从Earlist开始消费的问题
 
-官网上123456781. If offsets could not be found for a partition, the auto.offset.reset setting in the properties will be used.2. Flink Kafka Consumer Offset提交行为配置:Flink Kafka Consumer允许配置offset提交回Kafka brokers(Kafka 0.8是写回Zookeeper)的行为，注意Flink Kafka Consumer 并不依赖于这个提交的off...
+
+官网上1234567891. If offsets could not be found for a partition, the auto.offset.reset setting in the properties will be used.2. Flink Kafka Consumer Offset提交行为配置:Flink Kafka Consumer允许配置offset提交回Kafka brokers(Kafka 0.8是写回Zookeeper)的行为，注意Flink Kafka Consumer 并不依赖于这个提交的o...
           
 
         
@@ -342,7 +345,9 @@ Exactly once：只且一次，消息不丢失不重复，只且消费一次（�
 
 但是整体的消息投递语义需要Producer端和Consumer端两者来保证。
 
-Producer 消息生产者端当producer向broker发送一条消息，这时网络出错了，producer无法得知broker是否接受到了这条消息。网络出错可能是发生在消息传递的过程中，也可能发生在broker已经接受到了消息，并返回ack给producer的过程中。...
+
+
+Producer 消息生产者端当producer向broker发送一条消息，这时网络出错了，producer无法得知broker是否接受到了这条消息。网络出错可能是发生在消息传递的过程中，也可能发生在broker已经接受到了消息，并返回ack给producer的过程...
           
 
         
@@ -404,9 +409,10 @@ Producer 消息生产者端当producer向broker发送一条消息，这时网络
 1）先添加kudu-master（在新节点上初始化数据目录，从已有master上同步过来元数据，刷新 Raft 配置，启动所有master）
 2）删除要迁移的master（停掉所有进程，删除目标master，在新节点上重写 master 的 Raft 配置，再启动所有的）
 
+
 迁移前准备1. 识别存储目录，kudu的master同tablet一样配置有两个目录
 fs_wal_dir：write-ahead-logs目录 /data/kudu/master/wal
-fs_data_dirs：数据目录 /data/kudu/master/data （线上是/data1/kudu/mast...
+fs_data_dirs：数据目录 /data/kudu/master/data （线上是/data1/kudu/mas...
           
 
         

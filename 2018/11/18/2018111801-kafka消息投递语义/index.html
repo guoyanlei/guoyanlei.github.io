@@ -157,6 +157,8 @@ var themeMenus = {};
 </ul>
 <p>但是整体的消息投递语义需要Producer端和Consumer端两者来保证。</p>
 <a id="more"></a>
+
+
 <h3 id="Producer-消息生产者端"><a href="#Producer-消息生产者端" class="headerlink" title="Producer 消息生产者端"></a>Producer 消息生产者端</h3><p>当producer向broker发送一条消息，这时网络出错了，producer无法得知broker是否接受到了这条消息。网络出错可能是发生在消息传递的过程中，也可能发生在broker已经接受到了消息，并返回ack给producer的过程中。</p>
 <p>这时，producer会有两种选择：</p>
 <ul>

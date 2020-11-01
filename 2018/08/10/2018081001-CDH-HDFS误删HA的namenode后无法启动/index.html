@@ -157,6 +157,7 @@ var themeMenus = {};
         <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>今天干了一件现在想还有点害怕的是，记录下。</p>
 <p>新加了几天集群，想迁移一下Journal node，然后就顺手点了cloudera-manager上的角色迁移，在迁的过程中报错了，一系列操作后，不小心禁用了HA，禁用过程失败了，hdfs就无法启动了，报的错误如下图所示。随后又删除了3个journal node，添加了一个secondary namenode，hdfs的实例页面还是报同样的错误，重启hdfs也报这个错。突然不知道咋办有点慌了，唉。</p>
 <a id="more"></a>
+
 <p><img src="/img/cm/hdfs-ha-error.png" alt="hdfs-ha-error"></p>
 <p>冷静了一段时间后，从网上找到了解决方案，还是暗自庆幸的，但是下次不该这么鲁莽了。</p>
 <h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>1）删除了如下图所示的hdfs的配置文件。<br>因为把namenode 的ha删除之后，hdfs已经不再具有ha功能了，原来的ha设置就没有用了，但是配置上如果还存在，就会报错。</p>

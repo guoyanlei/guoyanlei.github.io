@@ -160,10 +160,11 @@ var themeMenus = {};
 一句话总结：架构是顶层设计；框架是面向编程或配置的半成品；组件是从技术维度上的复用；模块是从业务维度上职责的划分；系统是相互协同可运行的实体。
 
 
+
 架构设计的目的
 架构设计的主要目的是为了解决软件系统复杂度带来的问题。
 
-一句话总结：架构即(重要)决策，是在一个有约束的盒子里去求解或接...
+一句话总结：架构即(重要)决策，是在一个有约束的盒子里去求解或...
           
 
         
@@ -224,10 +225,11 @@ var themeMenus = {};
 在kafka-manager中的表现是：
 
 使用如下命令查看这个topic
-1./kafka-topics.sh --zookeeper node101.zk.dmp.dmp.com:2181,node102.zk.dmp.dmp.com:2181,node103.zk.dmp.dmp.com:2181 --describe --topic pv-event
+1.&#x2F;kafka-topics.sh --zookeeper node101.zk.dmp.dmp.com:2181,node102.zk.dmp.dmp.com:2181,node103.zk.dmp.dmp.com:2181 --describe --topic pv-event
 
 
-尝试在kafka-manager中（Manual Partition Assignments）进行手...
+
+尝试在kafka-manager中（Manual Partition Assignmen...
           
 
         
@@ -288,7 +290,8 @@ var themeMenus = {};
 /brokers当一个broker启动时,会向zookeeper注册自己持有的topic和partitions信息
 /brokers/ids每个broker的配置文件中都需要指定一个数字类型的id(全局不可重复)，此节点为临时znode(EPHEMERAL)
 
-123456789101112131415161718192021222324&gt; ls /brokers/ids/101[101, 102, 103]&gt; get /brokers/ids/101&#123;	&quot;listener_security_protocol_map&quot;:&#123;&quot;PLAINTEXT&quot;:&quot;PLAINTEXT&quot...
+
+12345678910111213141516171819202122232425&gt; ls &#x2F;brokers&#x2F;ids&#x2F;101[101, 102, 103]&gt; get &#x2F;brokers&#x2F;ids&#x2F;101&#123;	&quot;listener_security_protocol_map&quot;:&#123;&quot;PLA...
           
 
         
@@ -349,6 +352,7 @@ var themeMenus = {};
 CDH下载地址选择自己合适的版本
 manifest.json下载地址
 
+
 网络配置对于集群中搜索节点都需要做：
 
 修改主机名称
@@ -357,8 +361,10 @@ manifest.json下载地址
 配置免密码登陆对于集群中所有节点，任意两个节点实现免密码登陆。并且开启ssh服务。
 安装jdk对于集群中节点安装jdk，可以自己安装，也可以通过cloudera manager安装。安装完成之后，配置JAVA_HOME。对于线上，建议自己安装。
 安装和配置NTP服务cloudera manager通过ntp服务，保持集群内的时钟同步。时钟偏差会应用服务，特别是kudu，因为kudu的事务需要以来时钟一致。
-安装NTP1yum install ntp
-集群内，建议在集群内做一个NTP服务器，作...
+安装NTP
+1yum install ntp
+
+集群内，建议在集群内做一个NTP服务...
           
 
         
@@ -419,8 +425,9 @@ manifest.json下载地址
 新加了几天集群，想迁移一下Journal node，然后就顺手点了cloudera-manager上的角色迁移，在迁的过程中报错了，一系列操作后，不小心禁用了HA，禁用过程失败了，hdfs就无法启动了，报的错误如下图所示。随后又删除了3个journal node，添加了一个secondary namenode，hdfs的实例页面还是报同样的错误，重启hdfs也报这个错。突然不知道咋办有点慌了，唉。
 
 
+
 冷静了一段时间后，从网上找到了解决方案，还是暗自庆幸的，但是下次不该这么鲁莽了。
-解决方法1）删除了如下图所示的hdfs的配置文件。因为把namenode 的ha删除之后，hdfs已经不再具有ha功能了，原来的ha设置就没有用了，但是配置上...
+解决方法1）删除了如下图所示的hdfs的配置文件。因为把namenode 的ha删除之后，hdfs已经不再具有ha功能了，原来的ha设置就没有用了，但是配置...
           
 
         

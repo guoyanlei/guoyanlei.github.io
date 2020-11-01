@@ -149,8 +149,9 @@ var themeMenus = {};
             <div class="entry-summary" style="margin-left:0;">
             本文记录下CDH安装Phoenix所注意到事项，以及Pheonix表数据的导入导出。
 
+
 cloudera manager 安装pheonix下面总结Cloudera Manager安装并使用pheonix的步骤。
-123456781. 下载pheonix-CDH版本 phoenix-4.13.2-cdh5.11.22. 拷贝到一个节点，并解压3. 将phoenix-4.13.2-cdh5.11.2-server.jar 拷贝到Hbase集群的每一个Master和Region Server节点的/data/dmp/cloudera/parcels/CDH/lib/hbase/lib/4. 重启Hbase节点5. 建立启动脚本（./sqlline.py node1.zk.bigdata.d...
+1234567891. 下载pheonix-CDH版本 phoenix-4.13.2-cdh5.11.22. 拷贝到一个节点，并解压3. 将phoenix-4.13.2-cdh5.11.2-server.jar 拷贝到Hbase集群的每一个Master和Region Server节点的&#x2F;data&#x2F;dmp&#x2F;cloudera&#x2F;parcels&#x2F;CDH&#x2F;lib&#x2F;hbase&#x2F;lib&#x2F;4. 重启H...
           
 
         
@@ -209,8 +210,11 @@ cloudera manager 安装pheonix下面总结Cloudera Manager安装并使用pheonix
             <div class="entry-summary" style="margin-left:0;">
             公司新建了个大数据集群，需对老集群上的hive表数据迁移到新的集群中。这里总结下整个Hive表迁移的过程。
 
-创建数据临时目录1hdfs dfs -mkdir /tmp/hive-export
-生成数据导出脚本12345678-- 该命令会生成所有表的导出脚本hive -e &quot;show tables&quot; | awk &apos;&#123;printf &quot;export table %s to @/tmp/hive-export/%s@;\n&quot;,$1,$1&#125;&apos; | sed &quot;s/@/&apos;/g&quot; &gt; export.sql-- 若只想导出某个，可在hive中单独执行export table ods_l...
+
+
+创建数据临时目录12hdfs dfs -mkdir &#x2F;tmp&#x2F;hive-export
+
+生成数据导出脚本123456789-- 该命令会生成所有表的导出脚本hive -e &quot;show tables&quot; | awk &#39;&#123;printf &quot;export table %s to @&#x2F;tmp&#x2F;hive-export&#x2F;%s@;\n&quot;,$1,$1&#125;&#39; | sed &quot;s&#x2F;@&#x2F;&#39;&#x2F;g&quot; &gt; export.s...
           
 
         
@@ -272,7 +276,8 @@ cloudera manager 安装pheonix下面总结Cloudera Manager安装并使用pheonix
 详细可参考官方手册：https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html
 
 
-mysql导入hive12345678910sqoop import --connect jdbc:mysql://10.10.95.186:3306/ss_peacock \--table wnl_life_card_item \--username mysqlsiud \--password &apos;mysql!@#456&apos; \--hive-import \--hive-overwrite \--hive-table...
+
+mysql导入hive12345678910sqoop import --connect jdbc:mysql:&#x2F;&#x2F;10.10.95.186:3306&#x2F;ss_peacock \--table wnl_life_card_item \--username mysqlsiud \--password &#39;mysql!@#456&#39; \--hive-import \--hive-overwrite...
           
 
         
@@ -337,8 +342,10 @@ sqoop 与 hdfs和hive 没有安装在一起，sqoop单独一台机器。
 如何将sqoop使用集群的hdfs和hive
 
 
-解决方案环境变量配置12export HADOOP_COMMON_HOME=/data/dmp/cloudera/parcels/CDH/lib/hadoopexport HADOOP_MAPRED_HOME=/data/dmp/cloudera/parcels/CDH/lib/hadoop-mapreduce
-配置sqoop123/data/dmp/sqoop/conf.cloudera.sqoop_client/sqoop-env.shexport HADOOP_COMMON_HOME=/da...
+
+解决方案环境变量配置123export HADOOP_COMMON_HOME&#x3D;&#x2F;data&#x2F;dmp&#x2F;cloudera&#x2F;parcels&#x2F;CDH&#x2F;lib&#x2F;hadoopexport HADOOP_MAPRED_HOME&#x3D;&#x2F;data&#x2F;dmp&#x2F;cloudera&#x2F;parcels&#x2F;CDH&#x2F;lib&#x2F;hadoop-mapreduce
+
+配置sqoop1234...
           
 
         
@@ -397,8 +404,10 @@ sqoop 与 hdfs和hive 没有安装在一起，sqoop单独一台机器。
             <div class="entry-summary" style="margin-left:0;">
             HiveServer2（以下简称：HS2）是Hive提供的一种jdbc服务，用户可以通过Hive自带的Beeline连接，也可以使用Java、Python或者PHP等通过jdbc的方式连接。下面以Java连接HiveServer2为例来介绍几种向Hive传递参数的方法。
 
+
+
 Java-JDBC连接HS2连接到HS2，一般需要提供HS2的地址、端口号、连接的Hive库、用户名和密码这几个必选项，示例代码如下：
-1234567Class.forName(&quot;org.apache.hive.jdbc.HiveDriver&quot;);Properties info = new Properties();info.setProperty(&quot;user&quot;, &quot;...
+12345678Class.forName(&quot;org.apache.hive.jdbc.HiveDriver&quot;);Properties info &#x3D; new Properties();info.setProperty(&quot;user&quot;...
           
 
         

@@ -150,10 +150,11 @@ var themeMenus = {};
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="准备安装包"><a href="#准备安装包" class="headerlink" title="准备安装包"></a>准备安装包</h3><p><a href="http://archive.cloudera.com/cm5/cm/5/" target="_blank" rel="noopener">cloudera manager下载地址</a></p>
-<p><a href="http://archive.cloudera.com/cdh5/parcels/5.12.2/" target="_blank" rel="noopener">CDH下载地址</a>选择自己合适的版本</p>
-<p><a href="http://archive.cloudera.com/cdh5/parcels/5.12.2/manifest.json" target="_blank" rel="noopener">manifest.json下载地址</a></p>
+        <h3 id="准备安装包"><a href="#准备安装包" class="headerlink" title="准备安装包"></a>准备安装包</h3><p><a target="_blank" rel="noopener" href="http://archive.cloudera.com/cm5/cm/5/">cloudera manager下载地址</a></p>
+<p><a target="_blank" rel="noopener" href="http://archive.cloudera.com/cdh5/parcels/5.12.2/">CDH下载地址</a>选择自己合适的版本</p>
+<p><a target="_blank" rel="noopener" href="http://archive.cloudera.com/cdh5/parcels/5.12.2/manifest.json">manifest.json下载地址</a></p>
 <a id="more"></a>
+
 <h3 id="网络配置"><a href="#网络配置" class="headerlink" title="网络配置"></a>网络配置</h3><p>对于集群中搜索节点都需要做：</p>
 <ol>
 <li>修改主机名称</li>
@@ -162,46 +163,58 @@ var themeMenus = {};
 <h3 id="配置免密码登陆"><a href="#配置免密码登陆" class="headerlink" title="配置免密码登陆"></a>配置免密码登陆</h3><p>对于集群中所有节点，任意两个节点实现免密码登陆。并且开启ssh服务。</p>
 <h3 id="安装jdk"><a href="#安装jdk" class="headerlink" title="安装jdk"></a>安装jdk</h3><p>对于集群中节点安装jdk，可以自己安装，也可以通过cloudera manager安装。安装完成之后，配置<code>JAVA_HOME</code>。对于线上，建议自己安装。</p>
 <h3 id="安装和配置NTP服务"><a href="#安装和配置NTP服务" class="headerlink" title="安装和配置NTP服务"></a>安装和配置NTP服务</h3><p>cloudera manager通过ntp服务，保持集群内的时钟同步。时钟偏差会应用服务，特别是kudu，因为kudu的事务需要以来时钟一致。</p>
-<p>安装NTP<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install ntp</span><br></pre></td></tr></table></figure></p>
+<p>安装NTP</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install ntp</span><br></pre></td></tr></table></figure>
+
 <p>集群内，建议在集群内做一个NTP服务器，作为优先级最高的NTP服务器，其它的作为备用。</p>
-<p>手动同步可以如下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ntpdate -d NTP服务器的host或者IP</span><br></pre></td></tr></table></figure></p>
-<p>可以通过如下命令查看NTP的统计<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ntpstat</span><br></pre></td></tr></table></figure></p>
+<p>手动同步可以如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ntpdate -d NTP服务器的host或者IP</span><br></pre></td></tr></table></figure>
+
+<p>可以通过如下命令查看NTP的统计</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ntpstat</span><br></pre></td></tr></table></figure>
+
 <p>还可以通过ntpq查看ntp服务同步各个服务器的情况</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ntpq -p</span><br></pre></td></tr></table></figure>
-<p>若系统是CentOS7的同步时钟的方式建议使用chrony，<a href="http://guoyanlei.top/2018/05/30/2018053001-CentOS7.2-%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E5%B7%A5%E5%85%B7ntp&amp;chrony/">将ntp切换为chrony参考之前的文章</a></p>
+
+<p>若系统是CentOS7的同步时钟的方式建议使用chrony，<a href="http://guoyanlei.top/2018/05/30/2018053001-CentOS7.2-%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E5%B7%A5%E5%85%B7ntp&chrony/">将ntp切换为chrony参考之前的文章</a></p>
 <h3 id="准备MySQL"><a href="#准备MySQL" class="headerlink" title="准备MySQL"></a>准备MySQL</h3><p>cloudera-manager、hive、hue、oozie都需要MySQL来存储元数据。所以需要提前准备好一台MySQL。</p>
 <p>对于不同不同的服务，采用不同的kudu，不同的用户，进行授权。</p>
 <h3 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h3><p>通过yum安装cloudera-manager的依赖，命令如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">yum -y install chkconfig</span><br><span class="line">yum -y install bind-utils</span><br><span class="line">yum -y install psmisc</span><br><span class="line">yum -y install libxslt</span><br><span class="line">yum -y install zlib</span><br><span class="line">yum -y install sqlite</span><br><span class="line">yum -y install cyrus-sasl-plain</span><br><span class="line">yum -y install cyrus-sasl-gssapi</span><br><span class="line">yum -y install fuse</span><br><span class="line">yum -y install portmap</span><br><span class="line">yum -y install fuse-libs</span><br><span class="line">yum -y install redhat-lsb</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">yum -y install chkconfig</span><br><span class="line">yum -y install bind-utils</span><br><span class="line">yum -y install psmisc</span><br><span class="line">yum -y install libxslt</span><br><span class="line">yum -y install zlib</span><br><span class="line">yum -y install sqlite</span><br><span class="line">yum -y install cyrus-sasl-plain</span><br><span class="line">yum -y install cyrus-sasl-gssapi</span><br><span class="line">yum -y install fuse</span><br><span class="line">yum -y install portmap</span><br><span class="line">yum -y install fuse-libs</span><br><span class="line">yum -y install redhat-lsb</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <h3 id="安装cloudera-manager-server"><a href="#安装cloudera-manager-server" class="headerlink" title="安装cloudera manager server"></a>安装cloudera manager server</h3><ol>
 <li><p>在cloudera manager server所在节点创建cloudera-manager安装目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/dmp/cloudera-manager</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p &#x2F;data&#x2F;dmp&#x2F;cloudera-manager</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>将下载好的cloudera-manager安装包cloudera-manager-centos7-cm5.12.2_x86_64.tar.gz解压放在改目录：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf cloudera-manager-centos7-cm5.12.2_x86_64.tar.gz -C /data/dmp/cloudera-manager</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf cloudera-manager-centos7-cm5.12.2_x86_64.tar.gz -C &#x2F;data&#x2F;dmp&#x2F;cloudera-manager</span><br></pre></td></tr></table></figure>
+
 <ol start="3">
 <li>创建<code>cloudera-scm</code>用户</li>
 </ol>
 <p>Cloudera管理器服务器和托管服务被配置为在默认情况下使用用户帐户Cloudera-scm，创建具有这个名称的用户是最简单的方法。创建用户，在安装完成后自动使用。</p>
 <p>执行如下命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">useradd --system --home=/data/dmp/cloudera-manager/cm-5.12.2/run/cloudera-scm-server/ --no-create-home --shell=/bin/false --comment &quot;Cloudera SCM User&quot; cloudera-scm</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">useradd --system --home&#x3D;&#x2F;data&#x2F;dmp&#x2F;cloudera-manager&#x2F;cm-5.12.2&#x2F;run&#x2F;cloudera-scm-server&#x2F; --no-create-home --shell&#x3D;&#x2F;bin&#x2F;false --comment &quot;Cloudera SCM User&quot; cloudera-scm</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>下载MySQL驱动</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd  /data/dmp/cloudera-manager/cm-5.12.2/share/cmf/lib</span><br><span class="line"></span><br><span class="line">wget http://maven.aliyun.com/nexus/service/local/repositories/hongkong-nexus/content/Mysql/mysql-connector-java/5.1.38/mysql-connector-java-5.1.38.jar</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd  &#x2F;data&#x2F;dmp&#x2F;cloudera-manager&#x2F;cm-5.12.2&#x2F;share&#x2F;cmf&#x2F;lib</span><br><span class="line"></span><br><span class="line">wget http:&#x2F;&#x2F;maven.aliyun.com&#x2F;nexus&#x2F;service&#x2F;local&#x2F;repositories&#x2F;hongkong-nexus&#x2F;content&#x2F;Mysql&#x2F;mysql-connector-java&#x2F;5.1.38&#x2F;mysql-connector-java-5.1.38.jar</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>配置cloudera manager server的数据库</p>
 <p>进入cloudera-manager安装目录下的<code>cm-5.12.2/share/cmf/schema/</code>目录中，找到<code>scm_prepare_database.sh</code>，这个脚本是执行cloudera-amanger数据库初始化的脚本。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd /data/dmp/cloudera-manager/cm-5.12.2/share/cmf/schema/</span><br><span class="line"></span><br><span class="line">./scm_prepare_database.sh mysql cm -h $&#123;MySQL节点的host或者ip&#125; -u$&#123;MySQL用户&#125; -p$&#123;MySQL密码&#125; --scm-host $&#123;cloudera manager server的ip或者host&#125; scm scm scm</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;data&#x2F;dmp&#x2F;cloudera-manager&#x2F;cm-5.12.2&#x2F;share&#x2F;cmf&#x2F;schema&#x2F;</span><br><span class="line"></span><br><span class="line">.&#x2F;scm_prepare_database.sh mysql cm -h $&#123;MySQL节点的host或者ip&#125; -u$&#123;MySQL用户&#125; -p$&#123;MySQL密码&#125; --scm-host $&#123;cloudera manager server的ip或者host&#125; scm scm scm</span><br></pre></td></tr></table></figure>
+
 <p>看到如下信息，就配置成功</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[main] DbCommandExecutor              INFO  Successfully connected to database.</span><br><span class="line">All done, your SCM database is configured correctly!</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[main] DbCommandExecutor              INFO  Successfully connected to database.</span><br><span class="line">All done, your SCM database is configured correctly!</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <p>格式</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scm_prepare_database.sh mysql cm -h &lt;hostName&gt; -u&lt;username&gt;  -p&lt;password&gt; --scm-host &lt;hostName&gt;  scm scm scm</span><br><span class="line"></span><br><span class="line">对应于：数据库类型  数据库 服务器 用户名 密码  –scm-host  Cloudera_Manager_Server 所在节点……</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">scm_prepare_database.sh mysql cm -h &lt;hostName&gt; -u&lt;username&gt;  -p&lt;password&gt; --scm-host &lt;hostName&gt;  scm scm scm</span><br><span class="line"></span><br><span class="line">对应于：数据库类型  数据库 服务器 用户名 密码  –scm-host  Cloudera_Manager_Server 所在节点……</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Manager节点上创建Parcel目录</p>
 <p>(1). 创建目录<code>/data/dmp/cloudera/parcel-repo</code>，并且将该目录授权给cloudera-scm用户，执行命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/dmp/cloudera/parcel-repo</span><br><span class="line"></span><br><span class="line">chown cloudera-scm:cloudera-scm /data/dmp/cloudera/parcel-repo</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p &#x2F;data&#x2F;dmp&#x2F;cloudera&#x2F;parcel-repo</span><br><span class="line"></span><br><span class="line">chown cloudera-scm:cloudera-scm &#x2F;data&#x2F;dmp&#x2F;cloudera&#x2F;parcel-repo</span><br></pre></td></tr></table></figure>
+
 <p>(2) 将爱在好的parcel复制到<code>/data/dmp/cloudera/parcel-repo</code>目录下，parcel列表</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CDH-5.12.2-1.cdh5.12.2.p0.4-el7.parcel</span><br><span class="line">CDH-5.12.2-1.cdh5.12.2.p0.4-el7.parcel.sha</span><br><span class="line">manifest.json</span><br><span class="line">KUDU-1.4.0-1.cdh5.12.2.p0.8-el7.parcel</span><br><span class="line">KUDU-1.4.0-1.cdh5.12.2.p0.8-el7.parcel.sha</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CDH-5.12.2-1.cdh5.12.2.p0.4-el7.parcel</span><br><span class="line">CDH-5.12.2-1.cdh5.12.2.p0.4-el7.parcel.sha</span><br><span class="line">manifest.json</span><br><span class="line">KUDU-1.4.0-1.cdh5.12.2.p0.8-el7.parcel</span><br><span class="line">KUDU-1.4.0-1.cdh5.12.2.p0.8-el7.parcel.sha</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>注意，需要将<code>CDH-5.12.2-1.cdh5.12.2.p0.4-el7.parcel.sha1</code>重命名为<code>CDH-5.12.2-1.cdh5.12.2.p0.4-el7.parcel.sha</code>，否则系统会重新下载。</p>
 </li>
 </ol>
@@ -209,15 +222,15 @@ var themeMenus = {};
 <p>头3步和cloudera manager server节点相同</p>
 <ol>
 <li><p>在cloudera manager server所在节点创建cloudera-manager安装目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/dmp/cloudera-manager</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p &#x2F;data&#x2F;dmp&#x2F;cloudera-manager</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>将下载好的cloudera-manager安装包cloudera-manager-centos7-cm5.12.2_x86_64.tar.gz解压放在改目录：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf cloudera-manager-centos7-cm5.12.2_x86_64.tar.gz -C /data/dmp/cloudera-manager</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf cloudera-manager-centos7-cm5.12.2_x86_64.tar.gz -C &#x2F;data&#x2F;dmp&#x2F;cloudera-manager</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>创建<code>cloudera-scm</code>用户</p>
 <p>Cloudera管理器服务器和托管服务被配置为在默认情况下使用用户帐户Cloudera-scm，创建具有这个名称的用户是最简单的方法。创建用户，在安装完成后自动使用。</p>
 <p>执行如下命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">useradd --system --home=/data/dmp/cloudera-manager/cm-5.12.2/run/cloudera-scm-server/ --no-create-home --shell=/bin/false --comment &quot;Cloudera SCM User&quot; cloudera-scm</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">useradd --system --home&#x3D;&#x2F;data&#x2F;dmp&#x2F;cloudera-manager&#x2F;cm-5.12.2&#x2F;run&#x2F;cloudera-scm-server&#x2F; --no-create-home --shell&#x3D;&#x2F;bin&#x2F;false --comment &quot;Cloudera SCM User&quot; cloudera-scm</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>配置agent</p>
 <p>在<code>/data/dmp/cloudera-manager/cm-5.12.2/etc/cloudera-scm-agent/config.ini</code>中可以pacel、各个服务的安装目录、cloudera-manager server的地址。</p>
@@ -226,26 +239,29 @@ var themeMenus = {};
 <ol start="5">
 <li><p>创建parcels目录</p>
 <p>在agent节点上，创建<code>/data/dmp/cloudera/parcels</code>，并且将改目录用户组授权给cloudera-scm</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/dmp/cloudera/parcels</span><br><span class="line"></span><br><span class="line">chown cloudera-scm:cloudera-scm /data/dmp/cloudera/parcels</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p &#x2F;data&#x2F;dmp&#x2F;cloudera&#x2F;parcels</span><br><span class="line"></span><br><span class="line">chown cloudera-scm:cloudera-scm &#x2F;data&#x2F;dmp&#x2F;cloudera&#x2F;parcels</span><br></pre></td></tr></table></figure>
+
 </li>
 </ol>
 <h3 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h3><ol>
 <li><p>在manager节点启动cloudera-scm-server服务。执行命令:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/dmp/cloudera-manager/cm-5.12.2/etc/init.d/cloudera-scm-server start</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;data&#x2F;dmp&#x2F;cloudera-manager&#x2F;cm-5.12.2&#x2F;etc&#x2F;init.d&#x2F;cloudera-scm-server start</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>在agent节点启动agent</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/dmp/cloudera-manager/cm-5.12.2/etc/init.d/cloudera-scm-agent start</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;data&#x2F;dmp&#x2F;cloudera-manager&#x2F;cm-5.12.2&#x2F;etc&#x2F;init.d&#x2F;cloudera-scm-agent start</span><br></pre></td></tr></table></figure>
+
 </li>
 </ol>
 <h3 id="登陆cloudera-manager安装服务"><a href="#登陆cloudera-manager安装服务" class="headerlink" title="登陆cloudera manager安装服务"></a>登陆cloudera manager安装服务</h3><p>访问cloudera manager server节点的7180端口，这里的地址<code>http://cloudera-manager.etouch.cn/cmf/login</code></p>
 <p>通过用户名和密码登陆，默认的用户名和密码都是admin。</p>
 <p>安装提示一步一步进行配置，在安装会有机器监测，对于监测的问题，cloudera manager会有提示，提示如何修改。</p>
-<h4 id="向集群添加安装新的节点agent"><a href="#向集群添加安装新的节点agent" class="headerlink" title="向集群添加安装新的节点agent"></a>向集群添加安装新的节点agent</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/dmp/cloudera-manager</span><br><span class="line">tar -zxvf cloudera-manager-centos7-cm5.12.2_x86_64.tar.gz -C /data/dmp/cloudera-manager</span><br><span class="line"></span><br><span class="line">useradd --system --home=/data/dmp/cloudera-manager/cm-5.12.2/run/cloudera-scm-server/ --no-create-home --shell=/bin/false --comment "Cloudera SCM User" cloudera-scm</span><br><span class="line"></span><br><span class="line">cd /data/dmp/cloudera-manager/cm-5.12.2/etc/cloudera-scm-agent</span><br><span class="line">rm -f config.ini</span><br><span class="line"></span><br><span class="line">scp /data/dmp/cloudera-manager/cm-5.12.2/etc/cloudera-scm-agent/config.ini root@node104.bigdata.dmp.local.com:/data/dmp/cloudera-manager/cm-5.12.2/etc/cloudera-scm-agent/config.ini</span><br><span class="line"></span><br><span class="line">mkdir -p /data/dmp/cloudera/parcels</span><br><span class="line">chown cloudera-scm:cloudera-scm /data/dmp/cloudera/parcels</span><br></pre></td></tr></table></figure>
+<h4 id="向集群添加安装新的节点agent"><a href="#向集群添加安装新的节点agent" class="headerlink" title="向集群添加安装新的节点agent"></a>向集群添加安装新的节点agent</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/dmp/cloudera-manager</span><br><span class="line">tar -zxvf cloudera-manager-centos7-cm5.12.2_x86_64.tar.gz -C /data/dmp/cloudera-manager</span><br><span class="line"></span><br><span class="line">useradd --system --home=/data/dmp/cloudera-manager/cm-5.12.2/run/cloudera-scm-server/ --no-create-home --shell=/bin/false --comment &quot;Cloudera SCM User&quot; cloudera-scm</span><br><span class="line"></span><br><span class="line">cd /data/dmp/cloudera-manager/cm-5.12.2/etc/cloudera-scm-agent</span><br><span class="line">rm -f config.ini</span><br><span class="line"></span><br><span class="line">scp /data/dmp/cloudera-manager/cm-5.12.2/etc/cloudera-scm-agent/config.ini root@node104.bigdata.dmp.local.com:/data/dmp/cloudera-manager/cm-5.12.2/etc/cloudera-scm-agent/config.ini</span><br><span class="line"></span><br><span class="line">mkdir -p /data/dmp/cloudera/parcels</span><br><span class="line">chown cloudera-scm:cloudera-scm /data/dmp/cloudera/parcels</span><br></pre></td></tr></table></figure>
+
 <h3 id="Cloudera-Manager安装常见错误和脚本"><a href="#Cloudera-Manager安装常见错误和脚本" class="headerlink" title="Cloudera Manager安装常见错误和脚本"></a>Cloudera Manager安装常见错误和脚本</h3><h4 id="1-防火墙和selinux关闭"><a href="#1-防火墙和selinux关闭" class="headerlink" title="1. 防火墙和selinux关闭"></a>1. 防火墙和selinux关闭</h4><ul>
 <li>出现连接拒绝，用telnet测试相关端口，server：7180、agent：7182</li>
 </ul>
 <h4 id="2-CM-agent的日志在-data-dmp-log下面"><a href="#2-CM-agent的日志在-data-dmp-log下面" class="headerlink" title="2. CM agent的日志在/data/dmp/log下面"></a>2. CM agent的日志在/data/dmp/log下面</h4><ul>
-<li>新装agent起不来，可能需要手动创建相关文件夹。见：<a href="http://community.cloudera.com/t5/Cloudera-Manager-Installation/Failed-to-receive-heartbeat-from-agent-CM-server-guid/m-p/64228" target="_blank" rel="noopener">http://community.cloudera.com/t5/Cloudera-Manager-Installation/Failed-to-receive-heartbeat-from-agent-CM-server-guid/m-p/64228</a></li>
+<li>新装agent起不来，可能需要手动创建相关文件夹。见：<a target="_blank" rel="noopener" href="http://community.cloudera.com/t5/Cloudera-Manager-Installation/Failed-to-receive-heartbeat-from-agent-CM-server-guid/m-p/64228">http://community.cloudera.com/t5/Cloudera-Manager-Installation/Failed-to-receive-heartbeat-from-agent-CM-server-guid/m-p/64228</a></li>
 </ul>
 
       

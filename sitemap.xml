@@ -298,20 +298,6 @@
   </url>
   
   <url>
-    <loc>http://guoyanlei.top/tags/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/</loc>
-    <lastmod>2020-11-01</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://guoyanlei.top/tags/%E7%BB%B4%E5%BA%A6%E5%BB%BA%E6%A8%A1/</loc>
-    <lastmod>2020-11-01</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://guoyanlei.top/tags/kudu/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
@@ -320,6 +306,20 @@
   
   <url>
     <loc>http://guoyanlei.top/tags/cloudera-manager/</loc>
+    <lastmod>2020-11-01</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://guoyanlei.top/tags/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/</loc>
+    <lastmod>2020-11-01</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://guoyanlei.top/tags/%E7%BB%B4%E5%BA%A6%E5%BB%BA%E6%A8%A1/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -340,13 +340,6 @@
   </url>
   
   <url>
-    <loc>http://guoyanlei.top/tags/hdfs/</loc>
-    <lastmod>2020-11-01</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://guoyanlei.top/tags/pyspark/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
@@ -354,14 +347,14 @@
   </url>
   
   <url>
-    <loc>http://guoyanlei.top/tags/kafka/</loc>
+    <loc>http://guoyanlei.top/tags/hdfs/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://guoyanlei.top/tags/%E6%9E%B6%E6%9E%84/</loc>
+    <loc>http://guoyanlei.top/tags/kafka/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -383,6 +376,13 @@
   
   <url>
     <loc>http://guoyanlei.top/tags/sentry/</loc>
+    <lastmod>2020-11-01</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://guoyanlei.top/tags/%E6%9E%B6%E6%9E%84/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -440,14 +440,14 @@
   </url>
   
   <url>
-    <loc>http://guoyanlei.top/categories/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/</loc>
+    <loc>http://guoyanlei.top/categories/cloudera-manager/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://guoyanlei.top/categories/cloudera-manager/</loc>
+    <loc>http://guoyanlei.top/categories/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -468,7 +468,7 @@
   </url>
   
   <url>
-    <loc>http://guoyanlei.top/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/</loc>
+    <loc>http://guoyanlei.top/categories/kudu/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -482,7 +482,14 @@
   </url>
   
   <url>
-    <loc>http://guoyanlei.top/categories/kudu/</loc>
+    <loc>http://guoyanlei.top/categories/hue/</loc>
+    <lastmod>2020-11-01</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://guoyanlei.top/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -490,13 +497,6 @@
   
   <url>
     <loc>http://guoyanlei.top/categories/%E5%AD%A6%E6%9E%B6%E6%9E%84/</loc>
-    <lastmod>2020-11-01</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://guoyanlei.top/categories/hue/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>

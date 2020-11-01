@@ -161,12 +161,15 @@ var themeMenus = {};
         <p>最近在学习pyspark的开发，遇到些问题记录下。</p>
 <p>我们在开发pyspark时经常需要进行测试，自己电脑上安装搭建一个spark环境代价有点高，目前有的同事在开发时，通常是开发完把代码贴出到本地测试集群进行测试，因此，能不能借助pycharm里的一个功能，连接本地测试集群的pyspark进行执行呢，经过一番搜索终于实现了这一个功能。</p>
 <a id="more"></a>
+
+
 <h3 id="新建带有Virtualenv的工程"><a href="#新建带有Virtualenv的工程" class="headerlink" title="新建带有Virtualenv的工程"></a>新建带有Virtualenv的工程</h3><p>Virtualenv是什么？</p>
 <p>Python 的第三方包成千上万，在一个 Python 环境下开发时间越久、安装依赖越多，就越容易出现依赖包冲突的问题。为了解决这个问题，开发者们开发出了 virtualenv，可以搭建虚拟且独立的 Python 环境。这样就可以使每个项目环境与其他项目独立开来，保持环境的干净，解决包冲突问题。</p>
 <p>下面我们先见一个project，在pycharm中默认的是Virtualenv管理环境，当然还有conda，功能和Virtualenv类似。</p>
 <p><img src="/img/pycharm/new-project.png" alt="Virtualenv的工程"></p>
 <h3 id="开发-amp-导入pyspark"><a href="#开发-amp-导入pyspark" class="headerlink" title="开发&amp;导入pyspark"></a>开发&amp;导入pyspark</h3><p>新建一个py文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">from pyspark import SparkContext</span><br><span class="line">from pyspark.sql import HiveContext</span><br><span class="line"></span><br><span class="line">APP_NAME = &apos;APP_TEST&apos;</span><br><span class="line"></span><br><span class="line">sc = SparkContext(appName=APP_NAME)</span><br><span class="line">sqlContext = HiveContext(sc)</span><br><span class="line"></span><br><span class="line">sqlContext.sql(&quot;show databases&quot;).show()</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">from pyspark import SparkContext</span><br><span class="line">from pyspark.sql import HiveContext</span><br><span class="line"></span><br><span class="line">APP_NAME &#x3D; &#39;APP_TEST&#39;</span><br><span class="line"></span><br><span class="line">sc &#x3D; SparkContext(appName&#x3D;APP_NAME)</span><br><span class="line">sqlContext &#x3D; HiveContext(sc)</span><br><span class="line"></span><br><span class="line">sqlContext.sql(&quot;show databases&quot;).show()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <p>引入未安装的包时，pycharm会提示安装，安装需借助pip安装，若为安装pip需先安装，安装完成后会在项目目录：venv/lib/python2.7/site-packages 中出现安装好的第三方库。</p>
 <p>至此，我们就可以开发和使用pyspark中的一些文件了。</p>
 <p>开发是方便，但是我们还想变开发变测试，由于本地并没有装大数据相关环境，因此，我们还需要做些配置，来远程提交我们的代码并执行测试。</p>
@@ -184,12 +187,19 @@ var themeMenus = {};
 <p>执行上面定义好的的程序。</p>
 <p><img src="/img/pycharm/running.png" alt="Running"></p>
 <p>可以看出，实际程序执行的是同步到远程服务器的代码。并借助ssh登录到远程服务器执行，并返回执行的结果。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh://root@node102.bigdata.dmp.local.com:22/usr/bin/python -u /tmp/pycharm_project_568/suishen/uid_to_mongo.py</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh:&#x2F;&#x2F;root@node102.bigdata.dmp.local.com:22&#x2F;usr&#x2F;bin&#x2F;python -u &#x2F;tmp&#x2F;pycharm_project_568&#x2F;suishen&#x2F;uid_to_mongo.py</span><br></pre></td></tr></table></figure>
+
 <p>这样就很方便了，不需要每次边写代码，边复制粘贴进行测试了。</p>
 <h3 id="CDH-spark在执行时遇到的问题"><a href="#CDH-spark在执行时遇到的问题" class="headerlink" title="CDH-spark在执行时遇到的问题"></a>CDH-spark在执行时遇到的问题</h3><p>由于服务器安装的是CDH版本的spark，因此，在执行pyspark程序时需要指定SPARK_HOME。</p>
-<p>解决方案有很多种，可参考（<a href="https://blog.csdn.net/syani/article/details/72851425）" target="_blank" rel="noopener">https://blog.csdn.net/syani/article/details/72851425）</a></p>
+<p>解决方案有很多种，可参考（<a target="_blank" rel="noopener" href="https://blog.csdn.net/syani/article/details/72851425%EF%BC%89">https://blog.csdn.net/syani/article/details/72851425）</a></p>
 <p>我们使用的是第二种，在代码中灵活的配置SPARK_HOME和其他的环境地址。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">import sys</span><br><span class="line"></span><br><span class="line">os.environ[&apos;SPARK_HOME&apos;] = &quot;/data/dmp/cloudera/parcels/CDH-5.12.2-1.cdh5.12.2.p0.4/lib/spark&quot;</span><br><span class="line">sys.path.append(&quot;/data/dmp/cloudera/parcels/CDH-5.12.2-1.cdh5.12.2.p0.4/lib/spark/python&quot;)</span><br><span class="line">sys.path.append(&quot;/data/dmp/cloudera/parcels/CDH-5.12.2-1.cdh5.12.2.p0.4/lib/spark/python/lib/py4j-0.9-src.zip&quot;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">import sys</span><br><span class="line"></span><br><span class="line">os.environ[&#39;SPARK_HOME&#39;] &#x3D; &quot;&#x2F;data&#x2F;dmp&#x2F;cloudera&#x2F;parcels&#x2F;CDH-5.12.2-1.cdh5.12.2.p0.4&#x2F;lib&#x2F;spark&quot;</span><br><span class="line">sys.path.append(&quot;&#x2F;data&#x2F;dmp&#x2F;cloudera&#x2F;parcels&#x2F;CDH-5.12.2-1.cdh5.12.2.p0.4&#x2F;lib&#x2F;spark&#x2F;python&quot;)</span><br><span class="line">sys.path.append(&quot;&#x2F;data&#x2F;dmp&#x2F;cloudera&#x2F;parcels&#x2F;CDH-5.12.2-1.cdh5.12.2.p0.4&#x2F;lib&#x2F;spark&#x2F;python&#x2F;lib&#x2F;py4j-0.9-src.zip&quot;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
 
       
     </div>

@@ -155,40 +155,53 @@ var themeMenus = {};
       
         <p>以下内容只为记录下博客的搭建历程：</p>
 <ol>
-<li>博客搭建在<a href="https://pages.github.com/" target="_blank" rel="noopener">github pages</a>上，是基于自己的github空间搭建的，不明白的可以去度娘。</li>
-<li>域名是在<a href="https://wanwang.aliyun.com/domain/" target="_blank" rel="noopener">阿里万网</a>上购买的，觉得这个.tech域名很高大上就买了，希望之后可以在这里构建自己的technology栈。</li>
-<li>博客所使用的模板是开源的<a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>，github上的好多开源的东西还是很棒的！详细的见<a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a></li>
-<li>所使用的主题的是<a href="https://github.com/iTimeTraveler/hexo-theme-hiero" target="_blank" rel="noopener">hexo-theme-next</a>，<a href="https://athemes.com/theme/hiero/#" target="_blank" rel="noopener">官网</a>。</li>
+<li>博客搭建在<a target="_blank" rel="noopener" href="https://pages.github.com/">github pages</a>上，是基于自己的github空间搭建的，不明白的可以去度娘。</li>
+<li>域名是在<a target="_blank" rel="noopener" href="https://wanwang.aliyun.com/domain/">阿里万网</a>上购买的，觉得这个.tech域名很高大上就买了，希望之后可以在这里构建自己的technology栈。</li>
+<li>博客所使用的模板是开源的<a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>，github上的好多开源的东西还是很棒的！详细的见<a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a></li>
+<li>所使用的主题的是<a target="_blank" rel="noopener" href="https://github.com/iTimeTraveler/hexo-theme-hiero">hexo-theme-next</a>，<a target="_blank" rel="noopener" href="https://athemes.com/theme/hiero/#">官网</a>。</li>
 </ol>
 <a id="more"></a>
-<p>由于Hexo是基于<a href="http://nodejs.cn/" target="_blank" rel="noopener">NodeJs</a>开发的，所以在发布自己的博文时首先需要在本机安装NodeJs。</p>
+
+<p>由于Hexo是基于<a target="_blank" rel="noopener" href="http://nodejs.cn/">NodeJs</a>开发的，所以在发布自己的博文时首先需要在本机安装NodeJs。</p>
 <p><img src="/img/other/hexo-info-0924.png" alt="hexo"></p>
 <h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="进入到下载好的Hexo进行安装"><a href="#进入到下载好的Hexo进行安装" class="headerlink" title="进入到下载好的Hexo进行安装"></a>进入到下载好的Hexo进行安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-cli -g</span><br></pre></td></tr></table></figure>
+
 <h3 id="初始化博客"><a href="#初始化博客" class="headerlink" title="初始化博客"></a>初始化博客</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hexo init blog</span><br><span class="line"><span class="built_in">cd</span> blog</span><br><span class="line">npm install</span><br><span class="line">hexo server</span><br><span class="line"></span><br><span class="line">此时就可以在本地浏览器打开博客了，进入http://localhost:4000/</span><br></pre></td></tr></table></figure>
+
 <h3 id="进行相关配置"><a href="#进行相关配置" class="headerlink" title="进行相关配置"></a>进行相关配置</h3><p>在_config.xml文件中进行配置</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">title: 我的博客</span><br><span class="line">subtitle: xxx</span><br><span class="line">description: xxx</span><br><span class="line">author: xxx</span><br><span class="line">language: zh-CN</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-<h3 id="发布文章"><a href="#发布文章" class="headerlink" title="发布文章"></a>发布文章</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"hello-world"</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="发布文章"><a href="#发布文章" class="headerlink" title="发布文章"></a>发布文章</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;hello-world&quot;</span></span><br></pre></td></tr></table></figure>
+
 <p>然后就会在sources/_posts生成一篇文件名为hello-world.md的markdown文件。编辑该文件就可以写博客了。<br>这里有一些Front-matter需要介绍，可以配置文章使用的模板、所属的分类和tag等。</p>
 <p>Front-matter 是文件最上方以 — 分隔的区域，用于指定个别文件的变量，举例来说：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">title: <span class="string">"使用Hexo在Github上搭建自己的博客"</span></span><br><span class="line">date: 2016-09-21 22:30:04</span><br><span class="line">tags:</span><br><span class="line">- Hexo</span><br><span class="line">- Github</span><br><span class="line">categories:</span><br><span class="line">- other</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-<p>目前的categories只能有一个一级分类，如果填写多个，第二个会被解析为二级分类，以及类推。tags可以允许有多个。更多关于Front-matter请参考 <a href="http://hexo.io/zh-cn/docs/front-matter.html" target="_blank" rel="noopener">http://hexo.io/zh-cn/docs/front-matter.html</a> 。</p>
-<p>关于markdown的编写见: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">title: <span class="string">&quot;使用Hexo在Github上搭建自己的博客&quot;</span></span><br><span class="line">date: 2016-09-21 22:30:04</span><br><span class="line">tags:</span><br><span class="line">- Hexo</span><br><span class="line">- Github</span><br><span class="line">categories:</span><br><span class="line">- other</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+<p>目前的categories只能有一个一级分类，如果填写多个，第二个会被解析为二级分类，以及类推。tags可以允许有多个。更多关于Front-matter请参考 <a target="_blank" rel="noopener" href="http://hexo.io/zh-cn/docs/front-matter.html">http://hexo.io/zh-cn/docs/front-matter.html</a> 。</p>
+<p>关于markdown的编写见: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
 <h3 id="产生静态文件"><a href="#产生静态文件" class="headerlink" title="产生静态文件"></a>产生静态文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
 <h3 id="部署到github"><a href="#部署到github" class="headerlink" title="部署到github"></a>部署到github</h3><p>自动部署需要安装部署插件:<br>安装 hexo-deployer-git 插件，使用如下命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+
 <p>然后就可以在blog目录执行以下命令发布博客了。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/deployment.html">Deployment</a></p>
 <h3 id="之后再发布文章"><a href="#之后再发布文章" class="headerlink" title="之后再发布文章"></a>之后再发布文章</h3><p>再发布文章就只需如下命令就可以了</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ hexo clean 可省</span><br><span class="line">$ hexo genarate</span><br><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>其中更多关于hexo-theme-next主题的相关设置见<a href="http://theme-next.iissnan.com" target="_blank" rel="noopener">documentation</a>。</p>
+
+<p>其中更多关于hexo-theme-next主题的相关设置见<a target="_blank" rel="noopener" href="http://theme-next.iissnan.com/">documentation</a>。</p>
 <h2 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h2><h3 id="问题一：Local-hexo-not-found-in-xx"><a href="#问题一：Local-hexo-not-found-in-xx" class="headerlink" title="问题一：Local hexo not found in xx"></a>问题一：Local hexo not found in xx</h3><p>描述：Hexo搭建博客之后用git已经将所有的source都同步到了git上，在另一台电脑上将源代码clone下来之后，直接执行<code>hexo generate</code>，出现错误。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">E:\github\guoyanlei.github.io\blog&gt;hexo generate</span><br><span class="line">ERROR Local hexo not found <span class="keyword">in</span> E:\github\guoyanlei.github.io\blog</span><br><span class="line">ERROR Try running: <span class="string">'npm install hexo --save'</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">E:\github\guoyanlei.github.io\blog&gt;hexo generate</span><br><span class="line">ERROR Local hexo not found <span class="keyword">in</span> E:\github\guoyanlei.github.io\blog</span><br><span class="line">ERROR Try running: <span class="string">&#x27;npm install hexo --save&#x27;</span></span><br></pre></td></tr></table></figure>
+
 <p>原因：</p>
 <p>.gitignore文件里面忽略了node_modules文件夹，所以这个文件夹没有更新到git上去。所以要用npm重新安装到本地即可。</p>
 <p>解决办法：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> blog</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
+
+
 
       
     </div>

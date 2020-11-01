@@ -151,8 +151,10 @@ var themeMenus = {};
 如：将用户交易数据看做一个“事实”，可通过买家、卖家、商品和时间等多个维度来描述整个交易过程所发生的环境。
 维度所包含的表示维度的列，称为维度属性。维度属性是查询约束条件（where）、分组（group by）和报表标签生成的基本来源。
 
+
+
 下钻 &amp; 上钻（上卷）维度中的属性有时会以层次方式或一对多的方式相互关联，层次的最底层代表维度中描述最低级别的详细信息，最高层代表最高级别的概要信息。在属性的层次结构中进行钻取是数据钻取的方法之一。
-沿着属性层次，往下即为下钻（drill down），往上可称上钻或上卷（roll up...
+沿着属性层次，往下即为下钻（drill down），往上可称上钻或上卷（roll ...
           
 
         
@@ -211,9 +213,11 @@ var themeMenus = {};
             <div class="entry-summary" style="margin-left:0;">
             hive调优之控制mapper和reducer数由于mapreduce中没有办法直接控制map数量，所以只能曲线救国，通过设置每个map中处理的数据量进行设置；reduce是可以直接设置的。
 
-控制mapper数123set mapred.max.split.size=256000000;        -- 决定每个map处理的最大的文件大小，单位为Bset mapred.min.split.size.per.node=1;         -- 节点中可以处理的最小的文件大小set mapred.min.split.size.per.rack=1;         -- 机架中可以处理的最小的文件大小
+
+控制mapper数1234set mapred.max.split.size&#x3D;256000000;        -- 决定每个map处理的最大的文件大小，单位为Bset mapred.min.split.size.per.node&#x3D;1;         -- 节点中可以处理的最小的文件大小set mapred.min.split.size.per.rack&#x3D;1;         -- 机架中可以处理的最小的文件大小
+
 mapper划分文件处理逻辑
-执行HQL时，首先会读取表分区下到文件，然后分发到...
+执行HQL时，...
           
 
         
@@ -277,8 +281,9 @@ mapper划分文件处理逻辑
 但是，ntpd服务明明开启了，而且连接正常，还是提示时钟偏差。
 最终调研了chronyd，发现CentOS7.2已经推荐使用chronyd，因此试着改为chronyd，重启Cloudera agent后问题解决了。下面总结下chronyd时钟同步。
 
+
 chronydChrony是网络时间协议的 (NTP) 的另一种实现。一直以来众多发行版里标配的都是ntpd对时服务，自rhel7/centos7 起，Chrony做为了发行版里的标配服务，不过老的ntpd服务依旧在rhel7/centos7里可以找到。
-Chrony可以同时做为ntp服务的客户端和服务...
+Chrony可以同时做为ntp服务的客户端和服...
           
 
         
@@ -337,8 +342,9 @@ Chrony可以同时做为ntp服务的客户端和服务...
             <div class="entry-summary" style="margin-left:0;">
             背景CDH集群运行几天后主节点会报磁盘根目录空间不足警告，上机器看一下发现df和du结果差异巨大，猜测有些文件被删除但有进程并未释放文件句柄。
 
+
 排查执行 lsof | grep “(deleted)”不出所料，发现10000多个以下文件：
-1234567891011catalogd  18019             impala  252r      REG              253,1  28011300     819296 /tmp/9a02bf7f-bf3b-461c-a4e9-b49638cbc27b.jar (deleted)catalogd  18019             impala  253r      REG              253,1...
+1234567891011catalogd  18019             impala  252r      REG              253,1  28011300     819296 &#x2F;tmp&#x2F;9a02bf7f-bf3b-461c-a4e9-b49638cbc27b.jar (deleted)catalogd  18019             impala  253r      REG        ...
           
 
         
@@ -399,9 +405,10 @@ Chrony可以同时做为ntp服务的客户端和服务...
 1）背景：由于之前集群是基于虚拟化的方式搭建的集群，一个物理节点上虚拟出了十多个节点，由于每个物理节点的磁盘是固定的，随着我们数据量的增长，以及数据计算频度的增加，这套集群的磁盘io已经达到瓶颈，急需搭建新的物理节点集群。
 2）问题：这套老集群上部署着数据平台所用到的hbase和phoenix等，由于不能影响业务，所以短时间内不好进行迁移，但是集群的计算资源又不够用，继续把计算迁移出去。
 
+
 3）方案：一方面对新老集群实时日志收集进行双写，另一方面把hive表中的统计数据跨集群迁移，然后在新集群上进行统计操作，把统计后的数据跨集群写入老集群的hbase和phoenix中。
 本文记录下跨集群写入Hbase和Phoenix的方法。
-跨集群写入 hba...
+跨集群写入 hb...
           
 
         

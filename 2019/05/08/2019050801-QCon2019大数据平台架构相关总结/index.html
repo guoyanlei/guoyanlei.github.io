@@ -168,17 +168,18 @@ var themeMenus = {};
 <li>离线集群：是所有各种日志的最终汇聚点，一方面落地到数仓；另一方面面向次重要的实时消费和数据处理</li>
 </ul>
 <a id="more"></a>
+
 <p>业务场景架构如下：</p>
 <p><img src="/img/qcon/kuaishou-kafka-1.png" alt="kuaishou-kafka-1"></p>
 <p>其中，通过Mirror Service将多个在线集群和Log集群中数据汇总到离线集群</p>
 <h4 id="技术演进"><a href="#技术演进" class="headerlink" title="技术演进"></a>技术演进</h4><p>对kafka的使用做了如下优化：</p>
 <h5 id="优化一：kafka集群平滑扩容优化，解决了扩容节点时导致kafka集群物理资源大量消耗，影响producer写入"><a href="#优化一：kafka集群平滑扩容优化，解决了扩容节点时导致kafka集群物理资源大量消耗，影响producer写入" class="headerlink" title="优化一：kafka集群平滑扩容优化，解决了扩容节点时导致kafka集群物理资源大量消耗，影响producer写入"></a>优化一：kafka集群平滑扩容优化，解决了扩容节点时导致kafka集群物理资源大量消耗，影响producer写入</h5><ul>
 <li>问题：社区kafka对partition的迁移是从最初的offset开始的，触发读盘，物理资源大量消耗 =&gt; produce延迟增高且 抖动；扩容不平滑</li>
-<li>优化思路：从最新offset开始迁移，并同步一定时间，保障所有consumer都已经跟上（据说这一改进已经向社区提交了<a href="https://issues.apache.org/jira/browse/KAFKA-8328" target="_blank" rel="noopener">issues</a></li>
+<li>优化思路：从最新offset开始迁移，并同步一定时间，保障所有consumer都已经跟上（据说这一改进已经向社区提交了<a target="_blank" rel="noopener" href="https://issues.apache.org/jira/browse/KAFKA-8328">issues</a></li>
 </ul>
 <h5 id="优化二：Mirror集群化建设，摒弃了Apache-Kafka的Mirrormaker，基于uReplicator做了改进"><a href="#优化二：Mirror集群化建设，摒弃了Apache-Kafka的Mirrormaker，基于uReplicator做了改进" class="headerlink" title="优化二：Mirror集群化建设，摒弃了Apache Kafka的Mirrormaker，基于uReplicator做了改进"></a>优化二：Mirror集群化建设，摒弃了Apache Kafka的Mirrormaker，基于uReplicator做了改进</h5><ul>
 <li>问题：Apache Kafka的Mirrormaker是静态管理，运维成本高，易出错；当增加topic或集群时导致正在运行的数据Mirror整体断流</li>
-<li>优化思路：基于uber的<a href="https://github.com/uber/uReplicator" target="_blank" rel="noopener">UReplicator</a>做了改进，通过Mirror服务集群化管理，可减低运维，避免出错，支持快速调整，应对突增流量</li>
+<li>优化思路：基于uber的<a target="_blank" rel="noopener" href="https://github.com/uber/uReplicator">UReplicator</a>做了改进，通过Mirror服务集群化管理，可减低运维，避免出错，支持快速调整，应对突增流量</li>
 </ul>
 <h5 id="优化三：资源隔离，将不同业务线的topic进行物理隔离，保证互不影响"><a href="#优化三：资源隔离，将不同业务线的topic进行物理隔离，保证互不影响" class="headerlink" title="优化三：资源隔离，将不同业务线的topic进行物理隔离，保证互不影响"></a>优化三：资源隔离，将不同业务线的topic进行物理隔离，保证互不影响</h5><ul>
 <li>问题1：不同业务线topic缺少物理隔离，会相互影响</li>
@@ -346,7 +347,7 @@ var themeMenus = {};
 <p>具体架构就略了，目前还在开发迭代中，后期在看。</p>
 <p>整体get到的点可能就是：在未来的某一天磁盘IO不再是性能瓶颈，它可能比CPU处理更快，到时候现在已有的操作系统可能就需要重新设计。</p>
 <p>注：</p>
-<p>对相关内容感兴趣的可以下载<a href="https://ppt.geekbang.org/list/qconbj2019?from=groupmessage&amp;isappinstalled=0" target="_blank" rel="noopener">各分享PPT</a></p>
+<p>对相关内容感兴趣的可以下载<a target="_blank" rel="noopener" href="https://ppt.geekbang.org/list/qconbj2019?from=groupmessage&amp;isappinstalled=0">各分享PPT</a></p>
 
       
     </div>
